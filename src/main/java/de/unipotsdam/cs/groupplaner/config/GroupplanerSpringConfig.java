@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
+import java.util.logging.Logger;
 
 @Configuration
 @ComponentScan("de.unipotsdam.cs.groupplaner")
@@ -21,6 +22,11 @@ public class GroupplanerSpringConfig {
 		dataSource.setPassword("infopw");
 
 		return dataSource;
+	}
+	
+	@Bean
+	public Logger logger() {
+		return Logger.getAnonymousLogger();
 	}
 	
 }
