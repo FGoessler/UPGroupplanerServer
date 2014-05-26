@@ -17,6 +17,7 @@ import java.util.Map;
 
 @Component
 @Path(PathConfig.BLOCKED_DATES_RESOURCE_PATH)
+@Produces({MediaType.APPLICATION_JSON})
 public class BlockedDatesResource {
 
 	@Autowired
@@ -25,7 +26,6 @@ public class BlockedDatesResource {
 	private SecurityContextFacade securityContextFacade;
 
 	@GET
-	@Produces({MediaType.APPLICATION_JSON})
 	public Response getAllBlockedDates() throws Exception {
 		final ImmutableList<BlockedDate> blockedDates = blockedDatesRepository.getBlockedDates(securityContextFacade.getCurrentUserEmail());
 
@@ -34,34 +34,39 @@ public class BlockedDatesResource {
 
 	@POST
 	@Consumes({MediaType.APPLICATION_JSON})
-	@Produces({MediaType.APPLICATION_JSON})
 	public Response createBlockedDate(@RequestBody final Map<String, Object> data) throws Exception {
-		BlockedDate newBlockedDate = new BlockedDate((Integer)data.get("start"), (Integer)data.get("end"), (String)data.get("userEmail"));
-		
-		blockedDatesRepository.createBlockedDate(newBlockedDate);
-		
-		return Response.status(201).build();
+		BlockedDate newBlockedDate = new BlockedDate((Integer)data.get("start"), (Integer)data.get("end"), securityContextFacade.getCurrentUserEmail());
+
+		final BlockedDate createdBlockedDate = blockedDatesRepository.getBlockedDate(blockedDatesRepository.createBlockedDate(newBlockedDate));
+
+		return Response.status(201).entity(createdBlockedDate).build();
 	}
 
 	@GET
 	@Path("/{id}")
-	@Produces({MediaType.APPLICATION_JSON})
 	public Response getBlockedDate(@PathParam("id") final Integer id) throws Exception {
-		final BlockedDate blockedDate = blockedDatesRepository.getBlockedDate(id);
-		
-		if(!blockedDate.getUserEmail().equals(securityContextFacade.getCurrentUserEmail())) {
-			throw new AccessDeniedException("This date does not belong to the specified user.", null);
-		}
+		final BlockedDate blockedDate = checkAndGetBlockedDate(id);
 
 		return Response.status(200).entity(blockedDate).build();
 	}
 
 	@DELETE
 	@Path("/{id}")
-	@Produces({MediaType.APPLICATION_JSON})
 	public Response deleteBlockedDate(@PathParam("id") final Integer id) throws Exception {
+		checkAndGetBlockedDate(id);
+
 		blockedDatesRepository.deleteBlockedDate(id);
 
 		return Response.status(200).build();
+	}
+
+	private BlockedDate checkAndGetBlockedDate(final Integer id) {
+		final BlockedDate blockedDate = blockedDatesRepository.getBlockedDate(id);
+
+		if(!blockedDate.getUserEmail().equals(securityContextFacade.getCurrentUserEmail())) {
+			throw new AccessDeniedException("This date does not belong to the specified user.");
+		}
+		
+		return blockedDate;
 	}
 }

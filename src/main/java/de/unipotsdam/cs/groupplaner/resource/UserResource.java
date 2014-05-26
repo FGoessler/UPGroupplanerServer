@@ -15,6 +15,7 @@ import javax.ws.rs.core.Response;
 
 @Component
 @Path(PathConfig.BASE_RESOURCE_PATH)
+@Produces({MediaType.APPLICATION_JSON})
 public class UserResource {
 	
 	@Autowired
@@ -23,7 +24,6 @@ public class UserResource {
 	private SecurityContextFacade securityContextFacade;
 	
 	@GET
-	@Produces({MediaType.APPLICATION_JSON})
 	public Response getUser() throws Exception {
 		String email = securityContextFacade.getCurrentUserEmail();
 		User user = userRepository.getUser(email);

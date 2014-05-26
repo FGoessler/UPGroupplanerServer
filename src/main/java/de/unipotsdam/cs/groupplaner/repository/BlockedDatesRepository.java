@@ -5,7 +5,7 @@ import de.unipotsdam.cs.groupplaner.domain.BlockedDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
@@ -30,14 +30,18 @@ public class BlockedDatesRepository {
 		return template.queryForObject("SELECT * FROM blockedDates WHERE id=?", new BlockedDateRowMapper(), id);
 	}
 
-	public Boolean createBlockedDate(final BlockedDate newBlockedDate) {
-		NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(dataSource);
-		Map<String, Object> userMap = new HashMap<String, Object>();
-		userMap.put("start", newBlockedDate.getStart());
-		userMap.put("end", newBlockedDate.getEnd());
-		userMap.put("user", newBlockedDate.getUserEmail());
-		int rowsAffected = template.update("INSERT INTO blockedDates (start, end, user) VALUES (:start, :end, :user)", userMap);
-		return rowsAffected == 1;
+	public Integer createBlockedDate(final BlockedDate newBlockedDate) {
+		SimpleJdbcInsert template = new SimpleJdbcInsert(dataSource);
+		template.setTableName("blockedDates");
+		template.setGeneratedKeyName("id");
+		
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		paramMap.put("start", newBlockedDate.getStart());
+		paramMap.put("end", newBlockedDate.getEnd());
+		paramMap.put("user", newBlockedDate.getUserEmail());
+		
+		Number key = template.executeAndReturnKey(paramMap);
+		return key.intValue();
 	}
 	
 	public Boolean deleteBlockedDate(final Integer id) {
