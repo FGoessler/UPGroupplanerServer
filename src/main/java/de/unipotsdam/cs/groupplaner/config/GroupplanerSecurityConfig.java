@@ -27,8 +27,8 @@ public class GroupplanerSecurityConfig extends WebSecurityConfigurerAdapter {
 			.authorizeRequests()
 			.anyRequest().authenticated()
 			.and()
-			.httpBasic()
+			.httpBasic()	// http basic auth is enough for our purpose since this API should only be accessed via https!
 			.and()
-			.csrf().disable();		// disable Cross-Site-Request-Forgery to allow REST-API like POST requests
+			.csrf().disable();	// disable Cross-Site-Request-Forgery to allow REST-API like POST requests
 	}
 }

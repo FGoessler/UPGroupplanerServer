@@ -48,7 +48,7 @@ public class PulsLoginValidator {
 
 	private String createLoginValidationUrl(final String userEmail, final String password) {
 		final String username = userEmail.replace("@uni-potsdam.de", "");
-		//TODO: switch to https as soon as the musang server as a valid SSL certificate!
+		//TODO: switch to https as soon as the musang server has a valid SSL certificate!
 		return "http://musang.soft.cs.uni-potsdam.de/upapp/puls_request.php/puls_request.php?action=login&user=" + username + "&password=" + password + "&auth=H2LHXK5N9RDBXMA";
 	}
 }

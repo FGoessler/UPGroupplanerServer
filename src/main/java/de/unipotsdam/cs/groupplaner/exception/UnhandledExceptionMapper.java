@@ -14,6 +14,9 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * This ExceptionMapper handles any unmapped exceptions and provides an appropiate msg in JSON/XML format.
+ */
 @Provider
 @Component
 public class UnhandledExceptionMapper implements ExceptionMapper<Exception> {

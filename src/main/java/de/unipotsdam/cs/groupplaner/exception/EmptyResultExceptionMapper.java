@@ -8,6 +8,10 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
+/**
+ * This ExceptionMapper handles any EmptyResultDataAccessExceptions and maps them to a "404 Not Found" status code. 
+ * These exceptions occur e.g. if a sql request delivered zero results. 
+ */
 @Provider
 @Component
 public class EmptyResultExceptionMapper implements ExceptionMapper<EmptyResultDataAccessException> {

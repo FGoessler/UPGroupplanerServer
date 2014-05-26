@@ -12,6 +12,13 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This AuthenticationProvider will validate a combination of username and password against the "old" PHP API running 
+ * on musang.soft.cs.uni-potsdam.de. This API validates the username and password by performing a pseudo login on the 
+ * PULS website via a web crawler mechanism.
+ * This mechanism is highly unstable, error prone and slow! As soon as possible this AuthenticationProvider should be
+ * replaced with a validation via LDAP or Shibboleth!
+ */
 @Component
 public class PulsAuthenticationProvider implements AuthenticationProvider {
 

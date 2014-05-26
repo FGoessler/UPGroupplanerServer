@@ -20,6 +20,7 @@ public class GroupplanerSpringConfig {
 	public DataSource dataSource() {
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
 
+		//TODO: this is just a local config! extract the params to an env file etc.
 		dataSource.setDriverClassName("com.mysql.jdbc.Driver");
 		dataSource.setUrl("jdbc:mysql://localhost:3306/groupplaner");
 		dataSource.setUsername("uni");
