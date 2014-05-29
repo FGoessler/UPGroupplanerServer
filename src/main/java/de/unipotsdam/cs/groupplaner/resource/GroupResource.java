@@ -68,7 +68,7 @@ public class GroupResource {
 		
 		groupRepository.deleteGroup(id);
 		
-		return Response.status(200).build();
+		return Response.status(204).build();
 	}
 
 	@PUT

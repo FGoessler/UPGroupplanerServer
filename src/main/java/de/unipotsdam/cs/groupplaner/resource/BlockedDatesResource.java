@@ -57,7 +57,7 @@ public class BlockedDatesResource {
 
 		blockedDatesRepository.deleteBlockedDate(id);
 
-		return Response.status(200).build();
+		return Response.status(204).build();
 	}
 
 	private BlockedDate checkAndGetBlockedDate(final Integer id) {
