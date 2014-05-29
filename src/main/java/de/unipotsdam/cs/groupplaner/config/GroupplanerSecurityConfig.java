@@ -1,6 +1,7 @@
 package de.unipotsdam.cs.groupplaner.config;
 
 import de.unipotsdam.cs.groupplaner.auth.PulsAuthenticationProvider;
+import de.unipotsdam.cs.groupplaner.auth.RestfulBasicAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -24,11 +25,14 @@ public class GroupplanerSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http
+			// every resource is protected
 			.authorizeRequests()
 			.anyRequest().authenticated()
 			.and()
-			.httpBasic()	// http basic auth is enough for our purpose since this API should only be accessed via https!
+			// http basic auth is enough for our purpose since this API should only be accessed via https!
+			.httpBasic().authenticationEntryPoint(new RestfulBasicAuthenticationEntryPoint())	
 			.and()
-			.csrf().disable();	// disable Cross-Site-Request-Forgery to allow REST-API like POST requests
+			// disable Cross-Site-Request-Forgery to allow REST-API like POST requests
+			.csrf().disable();
 	}
 }
