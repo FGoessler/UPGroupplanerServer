@@ -74,16 +74,20 @@ public class GroupService {
 		return invitationRepository.getMember(inviteId);
 	}
 
-	public Member updateMemberStatus(final String memberEmail, final Integer groupId, final InvitationState invitationState) {
+	public Member updateMemberStatus(final String memberEmail, final Integer groupId, final InvitationState newInvitationState) {
 		validateUsersPermissionForGroup(groupId);
 
-		//TODO: check if transition is valid
+		final Member currentMemberData = invitationRepository.getMember(memberEmail, groupId);
+		final InvitationState currentInvitationState = currentMemberData.getInvitationState();
+		if (!InvitationState.isStateTransitionAllowed(currentInvitationState, newInvitationState)) {
+			throw new IllegalStateException("A transition from '" + currentInvitationState.toString() + "' to '" + newInvitationState.toString() + "' is not allowed.");
+		}
 
-		if (!invitationRepository.updateInviteStatus(memberEmail, groupId, invitationState)) {
+		if (!invitationRepository.updateInviteStatus(memberEmail, groupId, newInvitationState)) {
 			throw new EmptyResultDataAccessException(1);
 		}
-		
-		return invitationRepository.getMember(memberEmail, groupId);
+
+		return currentMemberData;
 	}
 
 	private void validateUsersPermissionForGroup(final Integer groupId) {
