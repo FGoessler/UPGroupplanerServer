@@ -13,9 +13,9 @@ import java.util.logging.Logger;
 @EnableWebMvc
 @Configuration
 @ComponentScan("de.unipotsdam.cs.groupplaner")
-@Import({ GroupplanerSecurityConfig.class })
+@Import({GroupplanerSecurityConfig.class})
 public class GroupplanerSpringConfig {
-	
+
 	@Bean
 	public DataSource dataSource() {
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
@@ -28,10 +28,10 @@ public class GroupplanerSpringConfig {
 
 		return dataSource;
 	}
-	
+
 	@Bean
 	public Logger logger() {
 		return Logger.getAnonymousLogger();
 	}
-	
+
 }

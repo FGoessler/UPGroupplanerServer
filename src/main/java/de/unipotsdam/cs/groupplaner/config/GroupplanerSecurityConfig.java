@@ -15,8 +15,9 @@ public class GroupplanerSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private PulsAuthenticationProvider pulsAuthenticationProvider;
-	
-	@SuppressWarnings("SpringJavaAutowiringInspection")		//the IDE seems not to know about spring security in detail...
+
+	@SuppressWarnings("SpringJavaAutowiringInspection")
+	//the IDE seems not to know about spring security in detail...
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 		auth.authenticationProvider(pulsAuthenticationProvider);
@@ -25,14 +26,14 @@ public class GroupplanerSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http
-			// every resource is protected
-			.authorizeRequests()
-			.anyRequest().authenticated()
-			.and()
-			// http basic auth is enough for our purpose since this API should only be accessed via https!
-			.httpBasic().authenticationEntryPoint(new RestfulBasicAuthenticationEntryPoint())	
-			.and()
-			// disable Cross-Site-Request-Forgery to allow REST-API like POST requests
-			.csrf().disable();
+				// every resource is protected
+				.authorizeRequests()
+				.anyRequest().authenticated()
+				.and()
+						// http basic auth is enough for our purpose since this API should only be accessed via https!
+				.httpBasic().authenticationEntryPoint(new RestfulBasicAuthenticationEntryPoint())
+				.and()
+						// disable Cross-Site-Request-Forgery to allow REST-API like POST requests
+				.csrf().disable();
 	}
 }

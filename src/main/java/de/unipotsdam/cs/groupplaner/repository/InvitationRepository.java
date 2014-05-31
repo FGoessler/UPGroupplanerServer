@@ -21,7 +21,7 @@ public class InvitationRepository {
 
 	@Autowired
 	private DataSource dataSource;
-	
+
 	public List<Member> getMembersOfGroup(final Integer groupId) {
 		JdbcTemplate template = new JdbcTemplate(dataSource);
 		return template.query("SELECT user.email, user.name, invites.status, invites.lastModified, invites.invitor FROM user LEFT JOIN invites ON user.email = invites.invitee WHERE invites.groupId=?", new MemberRowMapper(), groupId);

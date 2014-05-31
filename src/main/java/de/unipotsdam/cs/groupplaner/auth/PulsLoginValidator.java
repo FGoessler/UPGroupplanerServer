@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 
 @Component
 public class PulsLoginValidator {
-	
+
 	@Autowired
 	Logger logger;
 

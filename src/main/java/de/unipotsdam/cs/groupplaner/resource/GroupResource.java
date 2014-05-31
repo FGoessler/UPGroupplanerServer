@@ -21,7 +21,7 @@ public class GroupResource {
 
 	@Autowired
 	private GroupService groupService;
-	
+
 	@GET
 	public Response getGroups() {
 		final ImmutableList<Group> groupsOfUser = groupService.getGroups();

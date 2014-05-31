@@ -16,10 +16,10 @@ import java.util.Map;
 
 @Repository
 public class UserRepository {
-	
+
 	@Autowired
-	private DataSource dataSource; 
-	
+	private DataSource dataSource;
+
 	public Boolean createUser(final User newUser) {
 		NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(dataSource);
 		Map<String, Object> userMap = new HashMap<String, Object>();
@@ -28,7 +28,7 @@ public class UserRepository {
 		int rowsAffected = template.update("INSERT INTO user (email, name) VALUES (:email, :name)", userMap);
 		return rowsAffected == 1;
 	}
-	
+
 	public User getUser(final String email) {
 		JdbcTemplate template = new JdbcTemplate(dataSource);
 

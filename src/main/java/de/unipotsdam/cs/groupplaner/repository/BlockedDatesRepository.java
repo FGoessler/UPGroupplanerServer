@@ -25,7 +25,7 @@ public class BlockedDatesRepository {
 		JdbcTemplate template = new JdbcTemplate(dataSource);
 		return ImmutableList.copyOf(template.query("SELECT *  FROM blockedDates WHERE user=?", new BlockedDateRowMapper(), email));
 	}
-	
+
 	public BlockedDate getBlockedDate(final Integer id) {
 		JdbcTemplate template = new JdbcTemplate(dataSource);
 		return template.queryForObject("SELECT * FROM blockedDates WHERE id=?", new BlockedDateRowMapper(), id);

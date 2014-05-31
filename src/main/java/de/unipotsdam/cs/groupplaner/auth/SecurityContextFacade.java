@@ -12,18 +12,19 @@ import org.springframework.stereotype.Component;
 public class SecurityContextFacade {
 
 	/**
-	 * Gets the current user. Please note that the name property might be null since the user's data isn't looked up in 
-	 * the database. Basically this only wraps the user's email from getCurrentUserEmail() in an User object. 
+	 * Gets the current user. Please note that the name property might be null since the user's data isn't looked up in
+	 * the database. Basically this only wraps the user's email from getCurrentUserEmail() in an User object.
+	 *
 	 * @return The current user.
 	 */
 	public User getCurrentUser() {
-		return new User(getCurrentUserEmail(),null);
+		return new User(getCurrentUserEmail(), null);
 	}
-	
+
 	public String getCurrentUserEmail() {
 		return getSecurityContext().getAuthentication().getName();
 	}
-	
+
 	public SecurityContext getSecurityContext() {
 		return SecurityContextHolder.getContext();
 	}

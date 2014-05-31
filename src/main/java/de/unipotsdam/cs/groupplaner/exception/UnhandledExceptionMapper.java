@@ -28,16 +28,16 @@ public class UnhandledExceptionMapper implements ExceptionMapper<Exception> {
 	public Response toResponse(Exception exception) {
 
 		logger.log(Level.WARNING, exception.getMessage() + "\n" + getStackTrace(exception));
-		
+
 		Map<String, String> errMsgMap = new HashMap<String, String>();
 		errMsgMap.put("message", exception.getLocalizedMessage());
-		
+
 		return Response.status(Response.Status.INTERNAL_SERVER_ERROR).
 				entity(errMsgMap).
 				type(MediaType.APPLICATION_JSON).
 				build();
 	}
-	
+
 	private String getStackTrace(Exception exception) {
 		StringWriter stringWriter = new StringWriter();
 		PrintWriter printWriter = new PrintWriter(stringWriter, true);

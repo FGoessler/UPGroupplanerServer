@@ -18,10 +18,10 @@ import java.util.Map;
 @Path(PathConfig.GROUP_MEMBER_RESOURCE_PATH)
 @Produces({MediaType.APPLICATION_JSON})
 public class MemberResource {
-	
+
 	@Autowired
 	private GroupService groupService;
-	
+
 	@GET
 	public Response getMembers(@PathParam("id") final Integer groupId) {
 		final List<Member> members = groupService.getMembers(groupId);

@@ -17,17 +17,17 @@ import javax.ws.rs.core.Response;
 @Path(PathConfig.BASE_RESOURCE_PATH)
 @Produces({MediaType.APPLICATION_JSON})
 public class UserResource {
-	
+
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
 	private SecurityContextFacade securityContextFacade;
-	
+
 	@GET
 	public Response getUser() throws Exception {
 		String email = securityContextFacade.getCurrentUserEmail();
 		User user = userRepository.getUser(email);
-		if(user == null) {
+		if (user == null) {
 			userRepository.createUser(new User(email, ""));
 			user = userRepository.getUser(email);
 		}
