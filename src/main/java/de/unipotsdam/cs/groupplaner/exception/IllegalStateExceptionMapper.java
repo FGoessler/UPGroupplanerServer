@@ -10,8 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This ExceptionMapper handles any EmptyResultDataAccessExceptions and maps them to a "404 Not Found" status code.
- * These exceptions occur e.g. if a sql request delivered zero results.
+ * This ExceptionMapper handles any IllegalStateException and maps them to a "412 PRECONDITION FAILED" status code.
  */
 @Provider
 @Component
