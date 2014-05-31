@@ -8,4 +8,5 @@ public final class PathConfig {
 	public static final String BLOCKED_DATES_RESOURCE_PATH = BASE_RESOURCE_PATH + "/blockedDates";
 	public static final String GROUP_RESOURCE_PATH = BASE_RESOURCE_PATH + "/group";
 	public static final String GROUP_MEMBER_RESOURCE_PATH = GROUP_RESOURCE_PATH + "/{id}/member";
+	public static final String ACCEPTED_DATES_RESOURCE_PATH = GROUP_RESOURCE_PATH + "/{id}/acceptedDates";
 }

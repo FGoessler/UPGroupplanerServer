@@ -33,10 +33,12 @@ public class BlockedDatesResource {
 		return Response.status(Response.Status.OK).entity(blockedDates).build();
 	}
 
+	// TODO: handle overlapping dates
+
 	@POST
 	@Consumes({MediaType.APPLICATION_JSON})
 	public Response createBlockedDate(@RequestBody final Map<String, Object> data) throws Exception {
-		BlockedDate newBlockedDate = new BlockedDate((Integer)data.get("start"), (Integer)data.get("end"), securityContextFacade.getCurrentUserEmail());
+		BlockedDate newBlockedDate = new BlockedDate((Integer) data.get("start"), (Integer) data.get("end"), securityContextFacade.getCurrentUserEmail());
 
 		final BlockedDate createdBlockedDate = blockedDatesRepository.getBlockedDate(blockedDatesRepository.createBlockedDate(newBlockedDate));
 
@@ -56,7 +58,7 @@ public class BlockedDatesResource {
 	@Consumes({MediaType.APPLICATION_JSON})
 	public Response updateBlockedDate(@PathParam("id") final Integer id, @RequestBody final Map<String, Object> data) throws Exception {
 		checkAndGetBlockedDate(id);
-		
+
 		BlockedDate modifiedBlockedDate = new BlockedDate(id, (Integer) data.get("start"), (Integer) data.get("end"), securityContextFacade.getCurrentUserEmail());
 		final Boolean updateSuccessful = blockedDatesRepository.updateBlockedDate(modifiedBlockedDate);
 		if (!updateSuccessful) {
@@ -66,7 +68,7 @@ public class BlockedDatesResource {
 
 		return Response.status(Response.Status.OK).entity(modifiedBlockedDate).build();
 	}
-	
+
 	@DELETE
 	@Path("/{id}")
 	public Response deleteBlockedDate(@PathParam("id") final Integer id) throws Exception {
@@ -80,10 +82,10 @@ public class BlockedDatesResource {
 	private BlockedDate checkAndGetBlockedDate(final Integer id) {
 		final BlockedDate blockedDate = blockedDatesRepository.getBlockedDate(id);
 
-		if(!blockedDate.getUserEmail().equals(securityContextFacade.getCurrentUserEmail())) {
+		if (!blockedDate.getUserEmail().equals(securityContextFacade.getCurrentUserEmail())) {
 			throw new AccessDeniedException("This date does not belong to the specified user.");
 		}
-		
+
 		return blockedDate;
 	}
 }

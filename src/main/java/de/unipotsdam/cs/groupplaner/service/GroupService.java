@@ -90,7 +90,7 @@ public class GroupService {
 		return currentMemberData;
 	}
 
-	private void validateUsersPermissionForGroup(final Integer groupId) {
+	public void validateUsersPermissionForGroup(final Integer groupId) {
 		if (!isUserMemberOfGroup(securityContextFacade.getCurrentUserEmail(), groupId)) {
 			throw new AccessDeniedException("You are not a member of this group.");
 		}

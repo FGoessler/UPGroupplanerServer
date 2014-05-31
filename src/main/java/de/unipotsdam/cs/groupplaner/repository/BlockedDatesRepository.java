@@ -35,13 +35,8 @@ public class BlockedDatesRepository {
 		SimpleJdbcInsert template = new SimpleJdbcInsert(dataSource);
 		template.setTableName("blockedDates");
 		template.setGeneratedKeyName("id");
-		
-		Map<String, Object> paramMap = new HashMap<String, Object>();
-		paramMap.put("start", newBlockedDate.getStart());
-		paramMap.put("end", newBlockedDate.getEnd());
-		paramMap.put("user", newBlockedDate.getUserEmail());
-		
-		Number key = template.executeAndReturnKey(paramMap);
+
+		Number key = template.executeAndReturnKey(getParamMap(newBlockedDate));
 		return key.intValue();
 	}
 
@@ -50,20 +45,23 @@ public class BlockedDatesRepository {
 
 		NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(dataSource);
 
+		int rowsAffected = template.update("UPDATE blockedDates SET start=:start, end=:end, user=:user WHERE id=:id", getParamMap(modifiedBlockedDate));
+		return rowsAffected == 1;
+	}
+
+	public Boolean deleteBlockedDate(final Integer id) {
+		JdbcTemplate template = new JdbcTemplate(dataSource);
+		int rowsAffected = template.update("DELETE FROM blockedDates WHERE id=?", id);
+		return rowsAffected == 1;
+	}
+
+	private Map<String, Object> getParamMap(final BlockedDate modifiedBlockedDate) {
 		Map<String, Object> paramMap = new HashMap<String, Object>();
 		paramMap.put("start", modifiedBlockedDate.getStart());
 		paramMap.put("end", modifiedBlockedDate.getEnd());
 		paramMap.put("user", modifiedBlockedDate.getUserEmail());
 		paramMap.put("id", modifiedBlockedDate.getId());
-
-		int rowsAffected = template.update("UPDATE blockedDates SET start=:start, end=:end, user=:user WHERE id=:id", paramMap);
-		return rowsAffected == 1;
-	}
-	
-	public Boolean deleteBlockedDate(final Integer id) {
-		JdbcTemplate template = new JdbcTemplate(dataSource);
-		int rowsAffected = template.update("DELETE * FROM blockedDates WHERE id=?", id);
-		return rowsAffected == 1;
+		return paramMap;
 	}
 
 	private static class BlockedDateRowMapper implements RowMapper<BlockedDate> {
