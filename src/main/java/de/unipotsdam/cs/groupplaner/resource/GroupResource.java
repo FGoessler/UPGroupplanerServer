@@ -5,7 +5,7 @@ import com.google.common.collect.Lists;
 import de.unipotsdam.cs.groupplaner.auth.SecurityContextFacade;
 import de.unipotsdam.cs.groupplaner.config.PathConfig;
 import de.unipotsdam.cs.groupplaner.domain.Group;
-import de.unipotsdam.cs.groupplaner.domain.User;
+import de.unipotsdam.cs.groupplaner.domain.InvitationState;
 import de.unipotsdam.cs.groupplaner.repository.GroupRepository;
 import de.unipotsdam.cs.groupplaner.repository.InvitationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,11 +42,10 @@ public class GroupResource {
 	public Response createGroup(@RequestBody final Map data) {
 		final String email = securityContextFacade.getCurrentUserEmail();
 		final Group newGroup = new Group((String) data.get("name"));
-		final User user = new User(email, null);
 		
 		final Group createdGroup = groupRepository.getGroup(groupRepository.createGroup(newGroup));
-		invitationRepository.inviteUserToGroup(user, user, createdGroup);
-		invitationRepository.acceptInviteOfUserToGroup(user, createdGroup);
+		invitationRepository.inviteUserToGroup(email, email, createdGroup.getId());
+		invitationRepository.updateInviteStatus(email, createdGroup.getId(), InvitationState.ACCEPTED);
 		
 		return Response.status(201).entity(createdGroup).build();
 	}
