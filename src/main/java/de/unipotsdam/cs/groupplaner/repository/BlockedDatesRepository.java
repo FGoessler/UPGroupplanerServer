@@ -5,6 +5,7 @@ import de.unipotsdam.cs.groupplaner.domain.BlockedDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
@@ -42,6 +43,21 @@ public class BlockedDatesRepository {
 		
 		Number key = template.executeAndReturnKey(paramMap);
 		return key.intValue();
+	}
+
+	public Boolean updateBlockedDate(final BlockedDate modifiedBlockedDate) {
+		if (modifiedBlockedDate.getId() < 1) return false;
+
+		NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(dataSource);
+
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		paramMap.put("start", modifiedBlockedDate.getStart());
+		paramMap.put("end", modifiedBlockedDate.getEnd());
+		paramMap.put("user", modifiedBlockedDate.getUserEmail());
+		paramMap.put("id", modifiedBlockedDate.getId());
+
+		int rowsAffected = template.update("UPDATE blockedDates SET start=:start, end=:end, user=:user WHERE id=:id", paramMap);
+		return rowsAffected == 1;
 	}
 	
 	public Boolean deleteBlockedDate(final Integer id) {

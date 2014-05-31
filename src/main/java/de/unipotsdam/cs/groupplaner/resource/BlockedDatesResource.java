@@ -6,6 +6,7 @@ import de.unipotsdam.cs.groupplaner.config.PathConfig;
 import de.unipotsdam.cs.groupplaner.domain.BlockedDate;
 import de.unipotsdam.cs.groupplaner.repository.BlockedDatesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -50,6 +51,22 @@ public class BlockedDatesResource {
 		return Response.status(200).entity(blockedDate).build();
 	}
 
+	@PUT
+	@Path("/{id}")
+	@Consumes({MediaType.APPLICATION_JSON})
+	public Response updateBlockedDate(@PathParam("id") final Integer id, @RequestBody final Map<String, Object> data) throws Exception {
+		checkAndGetBlockedDate(id);
+		
+		BlockedDate modifiedBlockedDate = new BlockedDate(id, (Integer) data.get("start"), (Integer) data.get("end"), securityContextFacade.getCurrentUserEmail());
+		final Boolean updateSuccessful = blockedDatesRepository.updateBlockedDate(modifiedBlockedDate);
+		if (!updateSuccessful) {
+			throw new EmptyResultDataAccessException(1);
+		}
+		modifiedBlockedDate = blockedDatesRepository.getBlockedDate(modifiedBlockedDate.getId());
+
+		return Response.status(201).entity(modifiedBlockedDate).build();
+	}
+	
 	@DELETE
 	@Path("/{id}")
 	public Response deleteBlockedDate(@PathParam("id") final Integer id) throws Exception {
