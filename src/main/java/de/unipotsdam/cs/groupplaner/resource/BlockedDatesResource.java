@@ -30,7 +30,7 @@ public class BlockedDatesResource {
 	public Response getAllBlockedDates() throws Exception {
 		final ImmutableList<BlockedDate> blockedDates = blockedDatesRepository.getBlockedDates(securityContextFacade.getCurrentUserEmail());
 
-		return Response.status(200).entity(blockedDates).build();
+		return Response.status(Response.Status.OK).entity(blockedDates).build();
 	}
 
 	@POST
@@ -40,7 +40,7 @@ public class BlockedDatesResource {
 
 		final BlockedDate createdBlockedDate = blockedDatesRepository.getBlockedDate(blockedDatesRepository.createBlockedDate(newBlockedDate));
 
-		return Response.status(201).entity(createdBlockedDate).build();
+		return Response.status(Response.Status.CREATED).entity(createdBlockedDate).build();
 	}
 
 	@GET
@@ -48,7 +48,7 @@ public class BlockedDatesResource {
 	public Response getBlockedDate(@PathParam("id") final Integer id) throws Exception {
 		final BlockedDate blockedDate = checkAndGetBlockedDate(id);
 
-		return Response.status(200).entity(blockedDate).build();
+		return Response.status(Response.Status.OK).entity(blockedDate).build();
 	}
 
 	@PUT
@@ -64,7 +64,7 @@ public class BlockedDatesResource {
 		}
 		modifiedBlockedDate = blockedDatesRepository.getBlockedDate(modifiedBlockedDate.getId());
 
-		return Response.status(201).entity(modifiedBlockedDate).build();
+		return Response.status(Response.Status.OK).entity(modifiedBlockedDate).build();
 	}
 	
 	@DELETE
@@ -74,7 +74,7 @@ public class BlockedDatesResource {
 
 		blockedDatesRepository.deleteBlockedDate(id);
 
-		return Response.status(204).build();
+		return Response.status(Response.Status.NO_CONTENT).build();
 	}
 
 	private BlockedDate checkAndGetBlockedDate(final Integer id) {

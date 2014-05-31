@@ -25,27 +25,27 @@ public class GroupResource {
 	@GET
 	public Response getGroups() {
 		final ImmutableList<Group> groupsOfUser = groupService.getGroups();
-		return Response.status(200).entity(Lists.newArrayList(groupsOfUser)).build();
+		return Response.status(Response.Status.OK).entity(Lists.newArrayList(groupsOfUser)).build();
 	}
 
 	@POST
 	@Consumes({MediaType.APPLICATION_JSON})
 	public Response createGroup(@RequestBody final Map data) {
 		final Group createdGroup = groupService.createGroup((String) data.get("name"));
-		return Response.status(201).entity(createdGroup).build();
+		return Response.status(Response.Status.CREATED).entity(createdGroup).build();
 	}
 
 	@GET
 	@Path("/{id}")
 	public Response getGroup(@PathParam("id") final Integer id) {
-		return Response.status(200).entity(groupService.getGroup(id)).build();
+		return Response.status(Response.Status.OK).entity(groupService.getGroup(id)).build();
 	}
 
 	@DELETE
 	@Path("/{id}")
 	public Response deleteGroup(@PathParam("id") final Integer id) {
 		groupService.deleteGroup(id);
-		return Response.status(204).build();
+		return Response.status(Response.Status.CREATED).build();
 	}
 
 	@PUT
@@ -53,6 +53,6 @@ public class GroupResource {
 	@Consumes({MediaType.APPLICATION_JSON})
 	public Response updateGroup(@PathParam("id") final Integer id, @RequestBody final Map data) {
 		final Group updatedGroup = new Group(id, (String) data.get("name"));
-		return Response.status(200).entity(groupService.updateGroup(updatedGroup)).build();
+		return Response.status(Response.Status.OK).entity(groupService.updateGroup(updatedGroup)).build();
 	}
 }

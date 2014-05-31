@@ -31,7 +31,7 @@ public class UserResource {
 			userRepository.createUser(new User(email, ""));
 			user = userRepository.getUser(email);
 		}
-		
-		return Response.status(200).entity(user).build();
+
+		return Response.status(Response.Status.OK).entity(user).build();
 	}
 }

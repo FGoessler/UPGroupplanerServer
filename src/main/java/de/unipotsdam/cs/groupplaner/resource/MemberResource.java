@@ -25,14 +25,14 @@ public class MemberResource {
 	@GET
 	public Response getMembers(@PathParam("id") final Integer groupId) {
 		final List<Member> members = groupService.getMembers(groupId);
-		return Response.status(200).entity(members).build();
+		return Response.status(Response.Status.OK).entity(members).build();
 	}
 
 	@GET
 	@Path("/{email}")
 	public Response getMember(@PathParam("id") final Integer groupId, @PathParam("email") String email) {
 		Member member = groupService.getMember(email, groupId);
-		return Response.status(200).entity(member).build();
+		return Response.status(Response.Status.OK).entity(member).build();
 	}
 
 	@POST
@@ -40,7 +40,7 @@ public class MemberResource {
 	@Consumes({MediaType.APPLICATION_JSON})
 	public Response addMember(@PathParam("id") final Integer groupId, @PathParam("email") String email) {
 		Member newMember = groupService.inviteUser(email, groupId);
-		return Response.status(201).entity(newMember).build();
+		return Response.status(Response.Status.CREATED).entity(newMember).build();
 	}
 
 	@PUT
@@ -49,13 +49,13 @@ public class MemberResource {
 	public Response updateMember(@PathParam("id") final Integer groupId, @PathParam("email") final String email, @RequestBody final Map data) {
 		String newStatus = (String) data.get("status");
 		Member modifiedMember = groupService.updateMemberStatus(email, groupId, InvitationState.valueOf(newStatus));
-		return Response.status(200).entity(modifiedMember).build();
+		return Response.status(Response.Status.OK).entity(modifiedMember).build();
 	}
 
 	@DELETE
 	@Path("/{email}")
 	public Response deleteMember(@PathParam("id") final Integer groupId, @PathParam("email") String email) {
 		groupService.updateMemberStatus(email, groupId, InvitationState.LEFT);
-		return Response.status(204).build();
+		return Response.status(Response.Status.NO_CONTENT).build();
 	}
 }
