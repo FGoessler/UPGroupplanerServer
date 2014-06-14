@@ -5,8 +5,10 @@ import de.unipotsdam.cs.groupplaner.auth.SecurityContextFacade;
 import de.unipotsdam.cs.groupplaner.domain.Group;
 import de.unipotsdam.cs.groupplaner.domain.InvitationState;
 import de.unipotsdam.cs.groupplaner.domain.Member;
+import de.unipotsdam.cs.groupplaner.domain.User;
 import de.unipotsdam.cs.groupplaner.repository.GroupRepository;
 import de.unipotsdam.cs.groupplaner.repository.InvitationRepository;
+import de.unipotsdam.cs.groupplaner.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.access.AccessDeniedException;
@@ -21,6 +23,8 @@ public class GroupService {
 	private GroupRepository groupRepository;
 	@Autowired
 	private InvitationRepository invitationRepository;
+	@Autowired
+	private UserRepository userRepository;
 	@Autowired
 	private SecurityContextFacade securityContextFacade;
 
@@ -69,6 +73,16 @@ public class GroupService {
 
 	public Member inviteUser(final String inviteeMail, final Integer groupId) {
 		validateUsersPermissionForGroup(groupId);
+
+		// check if invitee is already member
+		if (isUserMemberOfGroup(inviteeMail, groupId)) {
+			throw new IllegalArgumentException("A person with this email address is already invited / a member of this group!");
+		}
+
+		// if the user does not exist in the db yet add him/her also to user table
+		if (userRepository.getUser(inviteeMail) == null) {
+			userRepository.createUser(new User(inviteeMail, ""));
+		}
 
 		final Integer inviteId = invitationRepository.addUserToGroup(inviteeMail, securityContextFacade.getCurrentUserEmail(), groupId, InvitationState.INVITED);
 		return invitationRepository.getMember(inviteId);
