@@ -36,10 +36,9 @@ public class MemberResource {
 	}
 
 	@POST
-	@Path("/{email}")
 	@Consumes({MediaType.APPLICATION_JSON})
-	public Response addMember(@PathParam("id") final Integer groupId, @PathParam("email") String email) {
-		Member newMember = groupService.inviteUser(email, groupId);
+	public Response addMember(@PathParam("id") final Integer groupId, @RequestBody final Map data) {
+		Member newMember = groupService.inviteUser((String) data.get("email"), groupId);
 		return Response.status(Response.Status.CREATED).entity(newMember).build();
 	}
 
@@ -47,8 +46,7 @@ public class MemberResource {
 	@Path("/{email}")
 	@Consumes({MediaType.APPLICATION_JSON})
 	public Response updateMember(@PathParam("id") final Integer groupId, @PathParam("email") final String email, @RequestBody final Map data) {
-		String newStatus = (String) data.get("status");
-		Member modifiedMember = groupService.updateMemberStatus(email, groupId, InvitationState.valueOf(newStatus));
+		Member modifiedMember = groupService.updateMemberStatus(email, groupId, InvitationState.valueOf((String) data.get("invitationState")));
 		return Response.status(Response.Status.OK).entity(modifiedMember).build();
 	}
 
