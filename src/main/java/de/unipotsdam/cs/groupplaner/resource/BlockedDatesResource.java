@@ -1,5 +1,6 @@
 package de.unipotsdam.cs.groupplaner.resource;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import de.unipotsdam.cs.groupplaner.auth.SecurityContextFacade;
 import de.unipotsdam.cs.groupplaner.config.PathConfig;
@@ -38,6 +39,9 @@ public class BlockedDatesResource {
 	@POST
 	@Consumes({MediaType.APPLICATION_JSON})
 	public Response createBlockedDate(@RequestBody final Map<String, Object> data) throws Exception {
+		Preconditions.checkNotNull(data.get("start"));
+		Preconditions.checkNotNull(data.get("end"));
+
 		BlockedDate newBlockedDate = new BlockedDate((Integer) data.get("start"), (Integer) data.get("end"), securityContextFacade.getCurrentUserEmail());
 
 		final BlockedDate createdBlockedDate = blockedDatesRepository.getBlockedDate(blockedDatesRepository.createBlockedDate(newBlockedDate));
@@ -57,6 +61,9 @@ public class BlockedDatesResource {
 	@Path("/{id}")
 	@Consumes({MediaType.APPLICATION_JSON})
 	public Response updateBlockedDate(@PathParam("id") final Integer id, @RequestBody final Map<String, Object> data) throws Exception {
+		Preconditions.checkNotNull(data.get("start"));
+		Preconditions.checkNotNull(data.get("end"));
+
 		checkAndGetBlockedDate(id);
 
 		BlockedDate modifiedBlockedDate = new BlockedDate(id, (Integer) data.get("start"), (Integer) data.get("end"), securityContextFacade.getCurrentUserEmail());

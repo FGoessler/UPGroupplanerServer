@@ -1,5 +1,6 @@
 package de.unipotsdam.cs.groupplaner.resource;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import de.unipotsdam.cs.groupplaner.config.PathConfig;
 import de.unipotsdam.cs.groupplaner.domain.AcceptedDate;
@@ -36,6 +37,9 @@ public class AcceptedDatesResource {
 	@POST
 	@Consumes({MediaType.APPLICATION_JSON})
 	public Response createAcceptedDate(@PathParam("id") final Integer groupId, @RequestBody final Map<String, Object> data) throws Exception {
+		Preconditions.checkNotNull(data.get("start"));
+		Preconditions.checkNotNull(data.get("end"));
+
 		AcceptedDate newAcceptedDate = new AcceptedDate((Integer) data.get("start"), (Integer) data.get("end"), groupId);
 
 		final Integer createdDateId = acceptedDatesRepository.createAcceptedDate(newAcceptedDate);
@@ -58,6 +62,9 @@ public class AcceptedDatesResource {
 	@Path("/{dateId}")
 	@Consumes({MediaType.APPLICATION_JSON})
 	public Response updateAcceptedDate(@PathParam("id") final Integer groupId, @PathParam("dateId") final Integer id, @RequestBody final Map<String, Object> data) throws Exception {
+		Preconditions.checkNotNull(data.get("start"));
+		Preconditions.checkNotNull(data.get("end"));
+
 		groupService.validateUsersPermissionForGroup(groupId);
 		validateGroupMatchesDate(groupId, id);
 

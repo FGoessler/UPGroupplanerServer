@@ -1,5 +1,6 @@
 package de.unipotsdam.cs.groupplaner.resource;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import de.unipotsdam.cs.groupplaner.config.PathConfig;
@@ -31,6 +32,8 @@ public class GroupResource {
 	@POST
 	@Consumes({MediaType.APPLICATION_JSON})
 	public Response createGroup(@RequestBody final Map data) {
+		Preconditions.checkNotNull(data.get("name"));
+
 		final Group createdGroup = groupService.createGroup((String) data.get("name"));
 		return Response.status(Response.Status.CREATED).entity(createdGroup).build();
 	}
@@ -52,6 +55,8 @@ public class GroupResource {
 	@Path("/{id}")
 	@Consumes({MediaType.APPLICATION_JSON})
 	public Response updateGroup(@PathParam("id") final Integer id, @RequestBody final Map data) {
+		Preconditions.checkNotNull(data.get("name"));
+
 		final Group updatedGroup = new Group(id, (String) data.get("name"));
 		return Response.status(Response.Status.OK).entity(groupService.updateGroup(updatedGroup)).build();
 	}

@@ -1,5 +1,6 @@
 package de.unipotsdam.cs.groupplaner.resource;
 
+import com.google.common.base.Preconditions;
 import de.unipotsdam.cs.groupplaner.config.PathConfig;
 import de.unipotsdam.cs.groupplaner.domain.InvitationState;
 import de.unipotsdam.cs.groupplaner.domain.Member;
@@ -38,6 +39,8 @@ public class MemberResource {
 	@POST
 	@Consumes({MediaType.APPLICATION_JSON})
 	public Response addMember(@PathParam("id") final Integer groupId, @RequestBody final Map data) {
+		Preconditions.checkNotNull(data.get("email"));
+
 		Member newMember = groupService.inviteUser((String) data.get("email"), groupId);
 		return Response.status(Response.Status.CREATED).entity(newMember).build();
 	}
@@ -46,6 +49,8 @@ public class MemberResource {
 	@Path("/{email}")
 	@Consumes({MediaType.APPLICATION_JSON})
 	public Response updateMember(@PathParam("id") final Integer groupId, @PathParam("email") final String email, @RequestBody final Map data) {
+		Preconditions.checkNotNull(data.get("invitationState"));
+
 		Member modifiedMember = groupService.updateMemberStatus(email, groupId, InvitationState.valueOf((String) data.get("invitationState")));
 		return Response.status(Response.Status.OK).entity(modifiedMember).build();
 	}
