@@ -45,7 +45,7 @@ public class GroupResource {
 	@Path("/{id}")
 	public Response deleteGroup(@PathParam("id") final Integer id) {
 		groupService.deleteGroup(id);
-		return Response.status(Response.Status.CREATED).build();
+		return Response.status(Response.Status.NO_CONTENT).build();
 	}
 
 	@PUT
