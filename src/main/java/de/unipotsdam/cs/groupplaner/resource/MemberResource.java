@@ -53,7 +53,7 @@ public class MemberResource {
 	@DELETE
 	@Path("/{email}")
 	public Response deleteMember(@PathParam("id") final Integer groupId, @PathParam("email") String email) {
-		groupService.updateMemberStatus(email, groupId, InvitationState.LEFT);
+		groupService.updateMemberStatus(email, groupId, InvitationState.REMOVED);
 		return Response.status(Response.Status.NO_CONTENT).build();
 	}
 }

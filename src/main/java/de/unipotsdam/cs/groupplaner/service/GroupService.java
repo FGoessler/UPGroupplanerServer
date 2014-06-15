@@ -84,8 +84,13 @@ public class GroupService {
 			userRepository.createUser(new User(inviteeMail, ""));
 		}
 
-		final Integer inviteId = invitationRepository.addUserToGroup(inviteeMail, securityContextFacade.getCurrentUserEmail(), groupId, InvitationState.INVITED);
-		return invitationRepository.getMember(inviteId);
+		// check whether the user already had an invite but rejected / was removed
+		if (isUserRejectedOrRemovedFromGroup(inviteeMail, groupId)) {
+			return updateMemberStatus(inviteeMail, groupId, InvitationState.INVITED);
+		} else {
+			final Integer inviteId = invitationRepository.addUserToGroup(inviteeMail, securityContextFacade.getCurrentUserEmail(), groupId, InvitationState.INVITED);
+			return invitationRepository.getMember(inviteId);
+		}
 	}
 
 	public Member updateMemberStatus(final String memberEmail, final Integer groupId, final InvitationState newInvitationState) {
@@ -114,7 +119,19 @@ public class GroupService {
 		final List<Member> membersOfGroup = invitationRepository.getMembersOfGroup(groupId);
 
 		for (Member member : membersOfGroup) {
-			if (member.getEmail().equals(useremail)) {
+			if (member.getEmail().equals(useremail) && (member.getInvitationState().equals(InvitationState.ACCEPTED) || member.getInvitationState().equals(InvitationState.INVITED))) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private Boolean isUserRejectedOrRemovedFromGroup(final String useremail, final Integer groupId) {
+		final List<Member> membersOfGroup = invitationRepository.getMembersOfGroup(groupId);
+
+		for (Member member : membersOfGroup) {
+			if (member.getEmail().equals(useremail) && (member.getInvitationState().equals(InvitationState.REJECTED) || member.getInvitationState().equals(InvitationState.REMOVED))) {
 				return true;
 			}
 		}

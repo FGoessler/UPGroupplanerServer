@@ -24,7 +24,7 @@ public class GroupRepository {
 
 	public ImmutableList<Group> getGroupsOfUser(final String email) {
 		JdbcTemplate template = new JdbcTemplate(dataSource);
-		final List<Group> groups = template.query("SELECT * FROM groups LEFT JOIN invites ON groups.id = invites.groupId WHERE invites.invitee=?", new GroupRowMapper(), email);
+		final List<Group> groups = template.query("SELECT * FROM groups LEFT JOIN invites ON groups.id = invites.groupId WHERE invites.invitee=? AND (invites.status='INVITED' OR invites.status='ACCEPTED')", new GroupRowMapper(), email);
 		return ImmutableList.copyOf(groups);
 	}
 

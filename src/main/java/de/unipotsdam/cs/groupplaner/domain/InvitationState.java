@@ -7,13 +7,16 @@ public enum InvitationState {
 	INVITED,    //
 	ACCEPTED,    //
 	REJECTED,    //
-	LEFT;
+	REMOVED;
 
 	public static Boolean isStateTransitionAllowed(final InvitationState oldState, final InvitationState newState) {
 		List<Transition> allowedTransitions = new ArrayList<Transition>();
-		allowedTransitions.add(new Transition(INVITED, ACCEPTED));        // from INVITED to ACCEPTED
-		allowedTransitions.add(new Transition(INVITED, REJECTED));        // from INVITED to REJECTED
-		allowedTransitions.add(new Transition(ACCEPTED, LEFT));            // from ACCEPTED to LEFT
+		allowedTransitions.add(new Transition(INVITED, ACCEPTED));
+		allowedTransitions.add(new Transition(INVITED, REJECTED));
+		allowedTransitions.add(new Transition(INVITED, REMOVED));
+		allowedTransitions.add(new Transition(ACCEPTED, REMOVED));
+		allowedTransitions.add(new Transition(REMOVED, INVITED));
+		allowedTransitions.add(new Transition(REJECTED, INVITED));
 
 		for (Transition allowedTransition : allowedTransitions) {
 			if (allowedTransition.getFrom() == oldState && allowedTransition.getTo() == newState) {

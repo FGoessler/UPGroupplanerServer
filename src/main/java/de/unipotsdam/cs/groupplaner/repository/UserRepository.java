@@ -2,7 +2,7 @@ package de.unipotsdam.cs.groupplaner.repository;
 
 import de.unipotsdam.cs.groupplaner.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -34,7 +34,7 @@ public class UserRepository {
 
 		try {
 			return template.queryForObject("SELECT * FROM user WHERE email=?", new String[]{email}, new UserRowMapper());
-		} catch (EmptyResultDataAccessException e) {
+		} catch (IncorrectResultSizeDataAccessException e) {
 			return null;
 		}
 	}
