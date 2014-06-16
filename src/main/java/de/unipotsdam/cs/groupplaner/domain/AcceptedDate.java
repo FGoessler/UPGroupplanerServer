@@ -1,16 +1,13 @@
 package de.unipotsdam.cs.groupplaner.domain;
 
 import de.unipotsdam.cs.groupplaner.support.PartialToIntegerConverter;
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.joda.time.Partial;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class AcceptedDate {
+public class AcceptedDate extends PeriodDate {
 	final private Integer id;
-	final private Partial start;
-	final private Partial end;
 	final private Integer group;
 
 	public AcceptedDate(final Partial start, final Partial end, final Integer groupId) {
@@ -22,9 +19,8 @@ public class AcceptedDate {
 	}
 
 	public AcceptedDate(final Integer id, final Partial start, final Partial end, final Integer groupId) {
+		super(end, start);
 		this.id = id;
-		this.start = start;
-		this.end = end;
 		this.group = groupId;
 	}
 
@@ -36,25 +32,8 @@ public class AcceptedDate {
 		return id;
 	}
 
-	public Integer getStart() {
-		return PartialToIntegerConverter.createDBIntFromPartial(start);
-	}
-
-	public Integer getEnd() {
-		return PartialToIntegerConverter.createDBIntFromPartial(end);
-	}
-
 	public Integer getGroup() {
 		return group;
 	}
 
-	@JsonIgnore
-	public Partial getStartAsPartial() {
-		return start;
-	}
-
-	@JsonIgnore
-	public Partial getEndAsPartial() {
-		return end;
-	}
 }

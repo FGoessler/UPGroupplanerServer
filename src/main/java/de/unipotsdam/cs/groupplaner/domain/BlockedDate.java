@@ -7,10 +7,8 @@ import org.joda.time.Partial;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class BlockedDate {
+public class BlockedDate extends PeriodDate {
 	final private Integer id;
-	final private Partial start;
-	final private Partial end;
 	final private String userEmail;
 
 	public BlockedDate(final Partial start, final Partial end, final String userEmail) {
@@ -22,9 +20,8 @@ public class BlockedDate {
 	}
 
 	public BlockedDate(final Integer id, final Partial start, final Partial end, final String userEmail) {
+		super(start, end);
 		this.id = id;
-		this.start = start;
-		this.end = end;
 		this.userEmail = userEmail;
 	}
 
@@ -34,24 +31,6 @@ public class BlockedDate {
 
 	public Integer getId() {
 		return id;
-	}
-
-	public Integer getStart() {
-		return PartialToIntegerConverter.createDBIntFromPartial(start);
-	}
-
-	public Integer getEnd() {
-		return PartialToIntegerConverter.createDBIntFromPartial(end);
-	}
-
-	@JsonIgnore
-	public Partial getStartAsPartial() {
-		return start;
-	}
-
-	@JsonIgnore
-	public Partial getEndAsPartial() {
-		return end;
 	}
 
 	@JsonIgnore
