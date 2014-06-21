@@ -19,7 +19,7 @@ public class AcceptedDate extends PeriodDate {
 	}
 
 	public AcceptedDate(final Integer id, final Partial start, final Partial end, final Integer groupId) {
-		super(end, start);
+		super(start, end);
 		this.id = id;
 		this.group = groupId;
 	}

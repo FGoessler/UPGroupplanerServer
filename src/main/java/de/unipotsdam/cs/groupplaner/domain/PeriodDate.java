@@ -11,9 +11,14 @@ public class PeriodDate {
 	protected final Partial start;
 	protected final Partial end;
 
-	public PeriodDate(final Partial end, final Partial start) {
+	public PeriodDate(final Partial start, final Partial end) {
 		this.end = end;
 		this.start = start;
+	}
+
+	public PeriodDate(final Integer start, final Integer end) {
+		this.end = PartialToIntegerConverter.createPartialFromDBInt(end);
+		this.start = PartialToIntegerConverter.createPartialFromDBInt(start);
 	}
 
 	public Integer getStart() {

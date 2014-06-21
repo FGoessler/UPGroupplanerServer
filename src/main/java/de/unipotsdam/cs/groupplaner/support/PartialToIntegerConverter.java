@@ -13,8 +13,8 @@ public class PartialToIntegerConverter {
 
 		int[] values = new int[3];
 		values[0] = partialAsIntFromDatabase / 10000;
-		values[1] = (partialAsIntFromDatabase - values[0] * 10000) / 100;
-		values[2] = partialAsIntFromDatabase - values[0] * 10000 - values[1] * 100;
+		values[1] = 1 + (partialAsIntFromDatabase - values[0] * 10000) / 100;
+		values[2] = partialAsIntFromDatabase - values[0] * 10000 - (values[1] - 1) * 100;
 
 		return new Partial(types, values);
 	}
@@ -29,7 +29,7 @@ public class PartialToIntegerConverter {
 			if (types[i] == DateTimeFieldType.dayOfWeek()) {
 				result += values[i] * 10000;
 			} else if (types[i] == DateTimeFieldType.clockhourOfDay()) {
-				result += values[i] * 100;
+				result += (values[i] - 1) * 100;
 			} else if (types[i] == DateTimeFieldType.minuteOfHour()) {
 				result += values[i];
 			}
