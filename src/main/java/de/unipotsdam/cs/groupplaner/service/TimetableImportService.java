@@ -1,5 +1,6 @@
 package de.unipotsdam.cs.groupplaner.service;
 
+import com.google.common.collect.ImmutableList;
 import de.unipotsdam.cs.groupplaner.config.ExternalAPIEndpoints;
 import de.unipotsdam.cs.groupplaner.domain.BlockedDate;
 import de.unipotsdam.cs.groupplaner.repository.BlockedDatesRepository;
@@ -34,7 +35,10 @@ public class TimetableImportService {
 		final List<BlockedDate> blockedDates = loadTimetableDates(userEmail, password);
 
 		if (blockedDates != null) {
-			//TODO: remove old dates
+			final ImmutableList<BlockedDate> oldDates = blockedDatesRepository.getBlockedDates(userEmail, TIMETABLE_IMPORTER_SOURCE_KEY);
+			for (BlockedDate date : oldDates) {
+				blockedDatesRepository.deleteBlockedDate(date.getId());
+			}
 
 			for (BlockedDate blockedDate : blockedDates) {
 				blockedDatesRepository.createBlockedDate(blockedDate);
