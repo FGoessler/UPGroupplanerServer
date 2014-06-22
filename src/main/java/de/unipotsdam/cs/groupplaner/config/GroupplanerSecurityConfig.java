@@ -16,11 +16,10 @@ public class GroupplanerSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private PulsAuthenticationProvider pulsAuthenticationProvider;
 
-	@SuppressWarnings("SpringJavaAutowiringInspection")
-	//the IDE seems not to know about spring security in detail...
+	@SuppressWarnings("SpringJavaAutowiringInspection") //the IDE seems not to know about spring security in detail...
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-		auth.authenticationProvider(pulsAuthenticationProvider);
+		auth.eraseCredentials(false).authenticationProvider(pulsAuthenticationProvider);
 	}
 
 	@Override

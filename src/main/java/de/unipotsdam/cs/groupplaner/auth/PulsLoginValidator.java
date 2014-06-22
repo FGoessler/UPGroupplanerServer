@@ -1,5 +1,6 @@
 package de.unipotsdam.cs.groupplaner.auth;
 
+import de.unipotsdam.cs.groupplaner.config.ExternalAPIEndpoints;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -16,7 +17,7 @@ import java.util.logging.Logger;
 public class PulsLoginValidator {
 
 	@Autowired
-	Logger logger;
+	private Logger logger;
 
 	public boolean validateLogin(final String userEmail, final String password) {
 		Boolean authenticated = false;
@@ -27,8 +28,7 @@ public class PulsLoginValidator {
 			CloseableHttpResponse response1 = httpclient.execute(httpGet);
 
 			try {
-				System.out.println(response1.getStatusLine());
-				HttpEntity entity1 = response1.getEntity();
+				final HttpEntity entity1 = response1.getEntity();
 
 				final String responseString = EntityUtils.toString(entity1);
 				if (responseString.equals("Login erfolgreich")) {
@@ -48,6 +48,6 @@ public class PulsLoginValidator {
 
 	private String createLoginValidationUrl(final String userEmail, final String password) {
 		final String username = userEmail.replace("@uni-potsdam.de", "");
-		return "https://musang.soft.cs.uni-potsdam.de/upapp/puls_request.php/puls_request.php?action=login&user=" + username + "&password=" + password + "&auth=H2LHXK5N9RDBXMA";
+		return ExternalAPIEndpoints.PHP_API_ENDPOINT + "?action=login&user=" + username + "&password=" + password + "&auth=" + ExternalAPIEndpoints.PHP_API_KEY;
 	}
 }
