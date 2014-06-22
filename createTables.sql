@@ -13,6 +13,7 @@ CREATE TABLE `blockedDates` (
   `user` varchar(255) NOT NULL DEFAULT '',
   `start` int(11) DEFAULT NULL,
   `end` int(11) DEFAULT NULL,
+  `source` VARCHAR(50) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `user` (`user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

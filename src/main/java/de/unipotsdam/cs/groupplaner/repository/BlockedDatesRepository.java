@@ -23,7 +23,12 @@ public class BlockedDatesRepository {
 
 	public ImmutableList<BlockedDate> getBlockedDates(final String email) {
 		JdbcTemplate template = new JdbcTemplate(dataSource);
-		return ImmutableList.copyOf(template.query("SELECT *  FROM blockedDates WHERE user=?", new BlockedDateRowMapper(), email));
+		return ImmutableList.copyOf(template.query("SELECT * FROM blockedDates WHERE user=?", new BlockedDateRowMapper(), email));
+	}
+
+	public ImmutableList<BlockedDate> getBlockedDates(final String email, final String source) {
+		JdbcTemplate template = new JdbcTemplate(dataSource);
+		return ImmutableList.copyOf(template.query("SELECT * FROM blockedDates WHERE user=? AND source=?", new BlockedDateRowMapper(), email, source));
 	}
 
 	public BlockedDate getBlockedDate(final Integer id) {
@@ -45,7 +50,7 @@ public class BlockedDatesRepository {
 
 		NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(dataSource);
 
-		int rowsAffected = template.update("UPDATE blockedDates SET start=:start, end=:end, user=:user WHERE id=:id", getParamMap(modifiedBlockedDate));
+		int rowsAffected = template.update("UPDATE blockedDates SET start=:start, end=:end, user=:user, source=:source WHERE id=:id", getParamMap(modifiedBlockedDate));
 		return rowsAffected == 1;
 	}
 
@@ -61,13 +66,14 @@ public class BlockedDatesRepository {
 		paramMap.put("end", modifiedBlockedDate.getEnd());
 		paramMap.put("user", modifiedBlockedDate.getUserEmail());
 		paramMap.put("id", modifiedBlockedDate.getId());
+		paramMap.put("source", modifiedBlockedDate.getSource());
 		return paramMap;
 	}
 
 	private static class BlockedDateRowMapper implements RowMapper<BlockedDate> {
 		@Override
 		public BlockedDate mapRow(final ResultSet resultSet, final int i) throws SQLException {
-			return new BlockedDate(resultSet.getInt("id"), resultSet.getInt("start"), resultSet.getInt("end"), resultSet.getString("user"));
+			return new BlockedDate(resultSet.getInt("id"), resultSet.getInt("start"), resultSet.getInt("end"), resultSet.getString("user"), resultSet.getString("source"));
 		}
 	}
 }

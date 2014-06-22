@@ -28,8 +28,13 @@ public class BlockedDatesResource {
 	private SecurityContextFacade securityContextFacade;
 
 	@GET
-	public Response getAllBlockedDates() throws Exception {
-		final ImmutableList<BlockedDate> blockedDates = blockedDatesRepository.getBlockedDates(securityContextFacade.getCurrentUserEmail());
+	public Response getAllBlockedDates(@QueryParam("source") final String sourceFilter) throws Exception {
+		final ImmutableList<BlockedDate> blockedDates;
+		if (sourceFilter == null) {
+			blockedDates = blockedDatesRepository.getBlockedDates(securityContextFacade.getCurrentUserEmail());
+		} else {
+			blockedDates = blockedDatesRepository.getBlockedDates(securityContextFacade.getCurrentUserEmail(), sourceFilter);
+		}
 
 		return Response.status(Response.Status.OK).entity(blockedDates).build();
 	}
@@ -41,8 +46,9 @@ public class BlockedDatesResource {
 	public Response createBlockedDate(@RequestBody final Map<String, Object> data) throws Exception {
 		Preconditions.checkNotNull(data.get("start"));
 		Preconditions.checkNotNull(data.get("end"));
+		Preconditions.checkNotNull(data.get("source"));
 
-		BlockedDate newBlockedDate = new BlockedDate((Integer) data.get("start"), (Integer) data.get("end"), securityContextFacade.getCurrentUserEmail());
+		BlockedDate newBlockedDate = new BlockedDate((Integer) data.get("start"), (Integer) data.get("end"), securityContextFacade.getCurrentUserEmail(), (String) data.get("source"));
 
 		final BlockedDate createdBlockedDate = blockedDatesRepository.getBlockedDate(blockedDatesRepository.createBlockedDate(newBlockedDate));
 
@@ -63,10 +69,11 @@ public class BlockedDatesResource {
 	public Response updateBlockedDate(@PathParam("id") final Integer id, @RequestBody final Map<String, Object> data) throws Exception {
 		Preconditions.checkNotNull(data.get("start"));
 		Preconditions.checkNotNull(data.get("end"));
+		Preconditions.checkNotNull(data.get("source"));
 
 		checkAndGetBlockedDate(id);
 
-		BlockedDate modifiedBlockedDate = new BlockedDate(id, (Integer) data.get("start"), (Integer) data.get("end"), securityContextFacade.getCurrentUserEmail());
+		BlockedDate modifiedBlockedDate = new BlockedDate(id, (Integer) data.get("start"), (Integer) data.get("end"), securityContextFacade.getCurrentUserEmail(), (String) data.get("source"));
 		final Boolean updateSuccessful = blockedDatesRepository.updateBlockedDate(modifiedBlockedDate);
 		if (!updateSuccessful) {
 			throw new EmptyResultDataAccessException(1);

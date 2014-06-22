@@ -23,6 +23,8 @@ import java.util.logging.Logger;
 @Service
 public class TimetableImportService {
 
+	private static final String TIMETABLE_IMPORTER_SOURCE_KEY = "TimetableImporter";
+
 	@Autowired
 	private BlockedDatesRepository blockedDatesRepository;
 	@Autowired
@@ -79,7 +81,7 @@ public class TimetableImportService {
 					final JSONObject date = dates.getJSONObject(j);
 					final String begin = date.getString("weekdaynr") + date.getString("begin");
 					final String end = date.getString("weekdaynr") + date.getString("end");
-					final BlockedDate blocked = new BlockedDate(Integer.parseInt(begin), Integer.parseInt(end), userEmail);
+					final BlockedDate blocked = new BlockedDate(Integer.parseInt(begin), Integer.parseInt(end), userEmail, TIMETABLE_IMPORTER_SOURCE_KEY);
 					timetableDates.add(blocked);
 				}
 			}
