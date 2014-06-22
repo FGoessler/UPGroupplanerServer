@@ -10,4 +10,6 @@ public final class PathConfig {
 	public static final String GROUP_MEMBER_RESOURCE_PATH = GROUP_RESOURCE_PATH + "/{id}/member";
 	public static final String ACCEPTED_DATES_RESOURCE_PATH = GROUP_RESOURCE_PATH + "/{id}/acceptedDates";
 	public static final String POTENTIAL_DATES_RESOURCE_PATH = GROUP_RESOURCE_PATH + "/{id}/potentialDates";
+
+	public static final String TIMETABLE_IMPORT_RESOURCE_PATH = BASE_RESOURCE_PATH + "/timetable/import";
 }
