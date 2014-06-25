@@ -44,13 +44,6 @@ public class GroupResource {
 		return Response.status(Response.Status.OK).entity(groupService.getGroup(id)).build();
 	}
 
-	@DELETE
-	@Path("/{id}")
-	public Response deleteGroup(@PathParam("id") final Integer id) {
-		groupService.deleteGroup(id);
-		return Response.status(Response.Status.NO_CONTENT).build();
-	}
-
 	@PUT
 	@Path("/{id}")
 	@Consumes({MediaType.APPLICATION_JSON})

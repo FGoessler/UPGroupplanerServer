@@ -1,5 +1,7 @@
 package de.unipotsdam.cs.groupplaner.service;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
 import de.unipotsdam.cs.groupplaner.auth.SecurityContextFacade;
 import de.unipotsdam.cs.groupplaner.domain.Group;
@@ -14,6 +16,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -52,13 +55,6 @@ public class GroupService {
 			throw new EmptyResultDataAccessException(1);
 		}
 		return groupRepository.getGroup(updatedGroup.getId());
-	}
-
-	public void deleteGroup(final Integer groupId) {
-		validateUsersPermissionForGroup(groupId);
-		if (!groupRepository.deleteGroup(groupId)) {
-			throw new EmptyResultDataAccessException(1);
-		}
 	}
 
 	public Member getMember(final String email, final Integer groupId) {
@@ -106,6 +102,10 @@ public class GroupService {
 			throw new EmptyResultDataAccessException(1);
 		}
 
+		if (!hasGroupActiveMembers(groupId)) {
+			groupRepository.deleteGroup(groupId);
+		}
+
 		return currentMemberData;
 	}
 
@@ -138,4 +138,16 @@ public class GroupService {
 
 		return false;
 	}
+
+	private Boolean hasGroupActiveMembers(final Integer groupId) {
+		final List<Member> members = invitationRepository.getMembersOfGroup(groupId);
+		final Collection<Member> activeMembers = Collections2.filter(members, new Predicate<Member>() {
+			@Override
+			public boolean apply(Member member) {
+				return member.getInvitationState() == InvitationState.ACCEPTED;
+			}
+		});
+		return activeMembers.size() > 0;
+	}
+
 }
