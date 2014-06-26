@@ -2,7 +2,6 @@ package de.unipotsdam.cs.groupplaner.resource;
 
 import de.unipotsdam.cs.groupplaner.config.PathConfig;
 import de.unipotsdam.cs.groupplaner.domain.PeriodDate;
-import de.unipotsdam.cs.groupplaner.service.GroupService;
 import de.unipotsdam.cs.groupplaner.service.PotentialDatesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,13 +21,9 @@ public class PotentialDatesResource {
 
 	@Autowired
 	private PotentialDatesService potentialDatesService;
-	@Autowired
-	private GroupService groupService;
 
 	@GET
 	public Response getPotentialDates(@PathParam("id") final Integer groupId) {
-		groupService.validateUsersPermissionForGroup(groupId);
-
 		final List<PeriodDate> potentialDates = potentialDatesService.calculatePotentialDates(groupId);
 		return Response.status(Response.Status.OK).entity(potentialDates).build();
 	}

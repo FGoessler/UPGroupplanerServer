@@ -23,7 +23,7 @@ public class TimetableImportResource {
 	private TimetableImportService timetableImportService;
 
 	@GET
-	public Response getUser() throws Exception {
+	public Response getUser() {
 		final String userEmail = securityContextFacade.getCurrentUserEmail();
 		final String password = securityContextFacade.getSecurityContext().getAuthentication().getCredentials().toString();
 

@@ -28,7 +28,7 @@ public class BlockedDatesResource {
 	private SecurityContextFacade securityContextFacade;
 
 	@GET
-	public Response getAllBlockedDates(@QueryParam("source") final String sourceFilter) throws Exception {
+	public Response getAllBlockedDates(@QueryParam("source") final String sourceFilter) {
 		final ImmutableList<BlockedDate> blockedDates;
 		if (sourceFilter == null) {
 			blockedDates = blockedDatesRepository.getBlockedDates(securityContextFacade.getCurrentUserEmail());
@@ -43,7 +43,7 @@ public class BlockedDatesResource {
 
 	@POST
 	@Consumes({MediaType.APPLICATION_JSON})
-	public Response createBlockedDate(@RequestBody final Map<String, Object> data) throws Exception {
+	public Response createBlockedDate(@RequestBody final Map<String, Object> data) {
 		Preconditions.checkNotNull(data.get("start"));
 		Preconditions.checkNotNull(data.get("end"));
 		Preconditions.checkNotNull(data.get("source"));
@@ -57,7 +57,7 @@ public class BlockedDatesResource {
 
 	@GET
 	@Path("/{id}")
-	public Response getBlockedDate(@PathParam("id") final Integer id) throws Exception {
+	public Response getBlockedDate(@PathParam("id") final Integer id) {
 		final BlockedDate blockedDate = checkAndGetBlockedDate(id);
 
 		return Response.status(Response.Status.OK).entity(blockedDate).build();
@@ -66,7 +66,7 @@ public class BlockedDatesResource {
 	@PUT
 	@Path("/{id}")
 	@Consumes({MediaType.APPLICATION_JSON})
-	public Response updateBlockedDate(@PathParam("id") final Integer id, @RequestBody final Map<String, Object> data) throws Exception {
+	public Response updateBlockedDate(@PathParam("id") final Integer id, @RequestBody final Map<String, Object> data) {
 		Preconditions.checkNotNull(data.get("start"));
 		Preconditions.checkNotNull(data.get("end"));
 		Preconditions.checkNotNull(data.get("source"));
@@ -85,7 +85,7 @@ public class BlockedDatesResource {
 
 	@DELETE
 	@Path("/{id}")
-	public Response deleteBlockedDate(@PathParam("id") final Integer id) throws Exception {
+	public Response deleteBlockedDate(@PathParam("id") final Integer id) {
 		checkAndGetBlockedDate(id);
 
 		blockedDatesRepository.deleteBlockedDate(id);

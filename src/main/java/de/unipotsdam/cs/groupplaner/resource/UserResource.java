@@ -24,7 +24,7 @@ public class UserResource {
 	private SecurityContextFacade securityContextFacade;
 
 	@GET
-	public Response getUser() throws Exception {
+	public Response getUser() {
 		String email = securityContextFacade.getCurrentUserEmail();
 		User user = userRepository.getUser(email);
 		if (user == null) {
