@@ -28,6 +28,8 @@ public class AcceptedDatesResource {
 
 	@GET
 	public Response getAcceptedDates(@PathParam("id") final Integer groupId) throws Exception {
+		groupService.validateUsersPermissionForGroup(groupId);
+
 		final ImmutableList<AcceptedDate> acceptedDates = acceptedDatesRepository.getAcceptedDates(groupId);
 		return Response.status(Response.Status.OK).entity(acceptedDates).build();
 	}
@@ -39,6 +41,8 @@ public class AcceptedDatesResource {
 	public Response createAcceptedDate(@PathParam("id") final Integer groupId, @RequestBody final Map<String, Object> data) throws Exception {
 		Preconditions.checkNotNull(data.get("start"));
 		Preconditions.checkNotNull(data.get("end"));
+
+		groupService.validateUsersPermissionForGroup(groupId);
 
 		AcceptedDate newAcceptedDate = new AcceptedDate((Integer) data.get("start"), (Integer) data.get("end"), groupId);
 
