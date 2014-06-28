@@ -98,7 +98,7 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	@Override
-	@PreAuthorize("@groupPermissionService.hasWritePermission(authentication, #groupId)")
+	@PreAuthorize("@groupPermissionService.hasWriteOrPartialWritePermission(authentication, #groupId, #memberEmail)")
 	public Member updateMemberStatus(final String memberEmail, final Integer groupId, final InvitationState newInvitationState) {
 		final Member currentMemberData = invitationRepository.getMember(memberEmail, groupId);
 		final InvitationState currentInvitationState = currentMemberData.getInvitationState();

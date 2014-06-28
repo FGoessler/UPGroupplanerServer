@@ -34,6 +34,19 @@ public class GroupPermissionService {
 		return isUserMemberOfGroup(auth.getName(), groupId);
 	}
 
+	/**
+	 * A user has partial write permissions for resources of a group that impact him.
+	 * Example: If a user is invited to a group he can update its own invitation state but not others.
+	 */
+	public Boolean hasWriteOrPartialWritePermission(final Principal auth, final Integer groupId, final String resourceOwner) {
+		final String userName = auth.getName();
+		if (!isUserMemberOfGroup(userName, groupId)) {
+			return isUserMemberOfGroupOrInvitedToGroup(userName, groupId) && resourceOwner.equals(userName);
+		} else {
+			return true;
+		}
+	}
+
 	private Boolean isUserMemberOfGroup(final String useremail, final Integer groupId) {
 		final List<Member> membersOfGroup = invitationRepository.getMembersOfGroup(groupId);
 
