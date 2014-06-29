@@ -76,7 +76,8 @@ public class PotentialDatesServiceImpl implements PotentialDatesService {
 	private List<PeriodDate> combineOverlappingBlockedDates(final List<PeriodDate> allBlockedDates) {
 		PeriodDate prevDate = allBlockedDates.get(0);
 		int indexCounter = 1;
-		for (int i = 1; i < allBlockedDates.size(); i++) {
+		final int originalSize = allBlockedDates.size();
+		for (int i = 1; i < originalSize; i++) {
 			PeriodDate curDate = allBlockedDates.get(indexCounter);
 			if (prevDate.getStart() <= curDate.getStart() && curDate.getStart() <= prevDate.getEnd()) {
 				//combine dates by creating a new date and replacing the old one with the new one
