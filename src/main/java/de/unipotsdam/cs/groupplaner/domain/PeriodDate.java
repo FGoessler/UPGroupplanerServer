@@ -4,6 +4,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class PeriodDate {
+
+	public static final int END_OF_WEEK = 72359;
+	public static final int START_OF_WEEK = 10000;
+
 	/**
 	 * The starting point represented as 5 digit integer.
 	 * 1. 		digit: 	weekday (1=monday , ... , 7=sunday)

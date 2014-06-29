@@ -4,6 +4,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class PrioritizedDate extends PeriodDate {
+
+	public static final int PRIORITY_OPTIMAL = 10;
+	public static final int PRIORITY_NEUTRAL = 0;
+	public static final int PRIORITY_BLOCKED = -10;
+
 	/**
 	 * A value between -10 and +10, were 0 is a neutral priority.
 	 */
