@@ -18,6 +18,12 @@ import java.util.List;
 @Service
 public class PotentialDatesServiceImpl implements PotentialDatesService {
 
+	public static final int END_OF_WEEK = 72359;
+	public static final int START_OF_WEEK = 10000;
+	public static final int PRIORITY_OPTIMAL = 10;
+	public static final int PRIORITY_NEUTRAL = 0;
+	public static final int PRIORITY_BLOCKED = -10;
+
 	@Autowired
 	private BlockedDatesRepository blockedDatesRepository;
 	@Autowired
@@ -33,7 +39,7 @@ public class PotentialDatesServiceImpl implements PotentialDatesService {
 
 		// cancel right here if we do not have any blocked dates
 		if (allBlockedDates.size() == 0) {
-			return ImmutableList.of(new PrioritizedDate(10000, 72359, 10));
+			return ImmutableList.of(new PrioritizedDate(START_OF_WEEK, END_OF_WEEK, PRIORITY_OPTIMAL));
 		}
 
 		// BlockedDates kombinieren
@@ -53,10 +59,10 @@ public class PotentialDatesServiceImpl implements PotentialDatesService {
 	private List<PrioritizedDate> prioritizeDates(final List<PeriodDate> allBlockedDates, final List<PeriodDate> availableDates) {
 		final List<PrioritizedDate> prioritizedDates = new ArrayList<PrioritizedDate>();
 		for (PeriodDate date : allBlockedDates) {
-			prioritizedDates.add(new PrioritizedDate(date, -10));
+			prioritizedDates.add(new PrioritizedDate(date, PRIORITY_BLOCKED));
 		}
 		for (PeriodDate date : availableDates) {
-			prioritizedDates.add(new PrioritizedDate(date, 10));
+			prioritizedDates.add(new PrioritizedDate(date, PRIORITY_OPTIMAL));
 		}
 		Collections.sort(prioritizedDates, new Comparator<PeriodDate>() {
 			@Override
@@ -93,7 +99,7 @@ public class PotentialDatesServiceImpl implements PotentialDatesService {
 
 	private List<PeriodDate> calculateAvailableDates(final List<PeriodDate> allBlockedDates) {
 		final List<PeriodDate> availableDates = new ArrayList<PeriodDate>();
-		int curPeriodStart = 10000;
+		int curPeriodStart = START_OF_WEEK;
 		for (PeriodDate periodDate : allBlockedDates) {
 			if (periodDate.getStart() == curPeriodStart) {
 				curPeriodStart = periodDate.getEnd();
@@ -102,8 +108,8 @@ public class PotentialDatesServiceImpl implements PotentialDatesService {
 				curPeriodStart = periodDate.getEnd();
 			}
 		}
-		if (curPeriodStart != 72359) {
-			availableDates.add(new PeriodDate(curPeriodStart, 72359));
+		if (curPeriodStart != END_OF_WEEK) {
+			availableDates.add(new PeriodDate(curPeriodStart, END_OF_WEEK));
 		}
 		return availableDates;
 	}
@@ -134,11 +140,12 @@ public class PotentialDatesServiceImpl implements PotentialDatesService {
 	}
 
 	private List<PeriodDate> splitOverflowingDates(final List<PeriodDate> allBlockedDates) {
+		// iterate over all dates and split those with end < start (e.g. starting friday and ending tuesday)
 		for (int i = 1; i < allBlockedDates.size(); i++) {
 			PeriodDate date = allBlockedDates.get(i);
 			if (date.getEnd() < date.getStart()) {
-				allBlockedDates.set(i, new PeriodDate(10000, date.getEnd()));
-				allBlockedDates.add(new PeriodDate(date.getStart(), 72359));
+				allBlockedDates.set(i, new PeriodDate(START_OF_WEEK, date.getEnd()));
+				allBlockedDates.add(new PeriodDate(date.getStart(), END_OF_WEEK));
 			}
 		}
 		return allBlockedDates;

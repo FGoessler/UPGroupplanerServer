@@ -1,6 +1,8 @@
 package de.unipotsdam.cs.groupplaner.domain;
 
+import javax.xml.bind.annotation.XmlRootElement;
 
+@XmlRootElement
 public class PrioritizedDate extends PeriodDate {
 	/**
 	 * A value between -10 and +10, were 0 is a neutral priority.
@@ -13,8 +15,7 @@ public class PrioritizedDate extends PeriodDate {
 	}
 
 	public PrioritizedDate(PeriodDate periodDate, Integer priority) {
-		super(periodDate.getStart(), periodDate.getEnd());
-		this.priority = priority;
+		this(periodDate.getStart(), periodDate.getEnd(), priority);
 	}
 
 	public Integer getPriority() {
