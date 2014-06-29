@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import de.unipotsdam.cs.groupplaner.domain.BlockedDate;
 import de.unipotsdam.cs.groupplaner.domain.Member;
 import de.unipotsdam.cs.groupplaner.domain.PeriodDate;
+import de.unipotsdam.cs.groupplaner.domain.PrioritizedDate;
 import de.unipotsdam.cs.groupplaner.repository.BlockedDatesRepository;
 import de.unipotsdam.cs.groupplaner.service.GroupService;
 import de.unipotsdam.cs.groupplaner.service.PotentialDatesService;
@@ -26,41 +27,47 @@ public class PotentialDatesServiceImpl implements PotentialDatesService {
 
 	@Override
 	@PreAuthorize("@groupPermissionService.hasReadPermission(authentication, #groupId)")
-	public ImmutableList<PeriodDate> calculatePotentialDates(final Integer groupId) {
-		// 1.) Alle BlockedDates aller Mitglieder laden
-		// TODO: durch andere Gruppen belegte Termine berücksichtigen
-		final List<Member> members = groupService.getMembers(groupId);
-		final List<PeriodDate> allBlockedDates = new ArrayList<PeriodDate>();
-		for (Member member : members) {
-			final ImmutableList<BlockedDate> usersBlockedDates = blockedDatesRepository.getBlockedDates(member.getEmail());
-			allBlockedDates.addAll(usersBlockedDates);
-		}
+	public ImmutableList<PrioritizedDate> calculatePotentialDates(final Integer groupId) {
+		// Alle BlockedDates aller Mitglieder laden
+		final List<PeriodDate> allBlockedDates = getBlockedDatesOfAllMembers(groupId);
 
 		// cancel right here if we do not have any blocked dates
 		if (allBlockedDates.size() == 0) {
-			return ImmutableList.of(new PeriodDate(10000, 72359));
+			return ImmutableList.of(new PrioritizedDate(10000, 72359, 10));
 		}
 
-		// 2.) split dates with end < start (e.g. starting friday and ending monday)
-		for (int i = 1; i < allBlockedDates.size(); i++) {
-			PeriodDate date = allBlockedDates.get(i);
-			if (date.getEnd() < date.getStart()) {
-				allBlockedDates.set(i, new PeriodDate(10000, date.getEnd()));
-				allBlockedDates.add(new PeriodDate(date.getStart(), 72359));
-			}
-		}
+		// BlockedDates kombinieren
+		// DO we really need this? Couldn't we directly resolve the free dates by iterating over all blocked dates and consider overlapping in the same step?
+		// This might make the QoS analysis easier!
+		final List<PeriodDate> combinedBlockedDates = combineOverlappingBlockedDates(allBlockedDates);
 
-		// 3.) BlockedDates sortieren
-		Collections.sort(allBlockedDates, new Comparator<PeriodDate>() {
+		// verfügbare Zeiten schlussfolgern
+		final List<PeriodDate> availableDates = calculateAvailableDates(combinedBlockedDates);
+
+		// Prioritäten zuweisen
+		final List<PrioritizedDate> prioritizedDates = prioritizeDates(combinedBlockedDates, availableDates);
+
+		return ImmutableList.copyOf(prioritizedDates);
+	}
+
+	private List<PrioritizedDate> prioritizeDates(final List<PeriodDate> allBlockedDates, final List<PeriodDate> availableDates) {
+		final List<PrioritizedDate> prioritizedDates = new ArrayList<PrioritizedDate>();
+		for (PeriodDate date : allBlockedDates) {
+			prioritizedDates.add(new PrioritizedDate(date, -10));
+		}
+		for (PeriodDate date : availableDates) {
+			prioritizedDates.add(new PrioritizedDate(date, 10));
+		}
+		Collections.sort(prioritizedDates, new Comparator<PeriodDate>() {
 			@Override
 			public int compare(PeriodDate date1, PeriodDate date2) {
 				return date1.getStart().compareTo(date2.getStart());
 			}
 		});
+		return prioritizedDates;
+	}
 
-		// 4.) BlockedDates kombinieren
-		// DO we really need this? Couldn't we directly resolve the free dates by iterating over all blocked dates and consider overlapping in the same step?
-		// This might make the QoS analysis easier!
+	private List<PeriodDate> combineOverlappingBlockedDates(final List<PeriodDate> allBlockedDates) {
 		PeriodDate prevDate = allBlockedDates.get(0);
 		int indexCounter = 1;
 		for (int i = 1; i < allBlockedDates.size(); i++) {
@@ -81,8 +88,10 @@ public class PotentialDatesServiceImpl implements PotentialDatesService {
 				indexCounter++;
 			}
 		}
+		return allBlockedDates;
+	}
 
-		// 5.) verfügbare Zeiten schlussfolgern
+	private List<PeriodDate> calculateAvailableDates(final List<PeriodDate> allBlockedDates) {
 		final List<PeriodDate> availableDates = new ArrayList<PeriodDate>();
 		int curPeriodStart = 10000;
 		for (PeriodDate periodDate : allBlockedDates) {
@@ -96,13 +105,39 @@ public class PotentialDatesServiceImpl implements PotentialDatesService {
 		if (curPeriodStart != 72359) {
 			availableDates.add(new PeriodDate(curPeriodStart, 72359));
 		}
+		return availableDates;
+	}
 
-		// TODO: also output blocked dates and give every date "optimum" value between -10 and 10
+	private List<PeriodDate> getBlockedDatesOfAllMembers(final Integer groupId) {
+		final List<Member> members = groupService.getMembers(groupId);
+		List<PeriodDate> allBlockedDates = new ArrayList<PeriodDate>();
+		for (Member member : members) {
+			final ImmutableList<BlockedDate> usersBlockedDates = blockedDatesRepository.getBlockedDates(member.getEmail());
+			allBlockedDates.addAll(usersBlockedDates);
+		}
+		// TODO: durch andere Gruppen belegte Termine berücksichtigen
 
-		// 6.) (optional) verfügbare Zeiten mit Qualität bewerten
-		// TODO: Qualitätsbewertung
+		allBlockedDates = splitOverflowingDates(allBlockedDates);
 
-		return ImmutableList.copyOf(availableDates);
+		Collections.sort(allBlockedDates, new Comparator<PeriodDate>() {
+			@Override
+			public int compare(PeriodDate date1, PeriodDate date2) {
+				return date1.getStart().compareTo(date2.getStart());
+			}
+		});
+
+		return allBlockedDates;
+	}
+
+	private List<PeriodDate> splitOverflowingDates(final List<PeriodDate> allBlockedDates) {
+		for (int i = 1; i < allBlockedDates.size(); i++) {
+			PeriodDate date = allBlockedDates.get(i);
+			if (date.getEnd() < date.getStart()) {
+				allBlockedDates.set(i, new PeriodDate(10000, date.getEnd()));
+				allBlockedDates.add(new PeriodDate(date.getStart(), 72359));
+			}
+		}
+		return allBlockedDates;
 	}
 
 
