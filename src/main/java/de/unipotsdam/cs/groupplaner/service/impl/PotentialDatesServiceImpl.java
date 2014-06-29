@@ -1,10 +1,8 @@
 package de.unipotsdam.cs.groupplaner.service.impl;
 
 import com.google.common.collect.ImmutableList;
-import de.unipotsdam.cs.groupplaner.domain.BlockedDate;
-import de.unipotsdam.cs.groupplaner.domain.Member;
-import de.unipotsdam.cs.groupplaner.domain.PeriodDate;
-import de.unipotsdam.cs.groupplaner.domain.PrioritizedDate;
+import de.unipotsdam.cs.groupplaner.domain.*;
+import de.unipotsdam.cs.groupplaner.repository.AcceptedDatesRepository;
 import de.unipotsdam.cs.groupplaner.repository.BlockedDatesRepository;
 import de.unipotsdam.cs.groupplaner.service.GroupService;
 import de.unipotsdam.cs.groupplaner.service.PotentialDatesService;
@@ -22,6 +20,8 @@ public class PotentialDatesServiceImpl implements PotentialDatesService {
 
 	@Autowired
 	private BlockedDatesRepository blockedDatesRepository;
+	@Autowired
+	private AcceptedDatesRepository acceptedDatesRepository;
 	@Autowired
 	private GroupService groupService;
 
@@ -112,10 +112,14 @@ public class PotentialDatesServiceImpl implements PotentialDatesService {
 		final List<Member> members = groupService.getMembers(groupId);
 		List<PeriodDate> allBlockedDates = new ArrayList<PeriodDate>();
 		for (Member member : members) {
+			// add members blocked dates
 			final ImmutableList<BlockedDate> usersBlockedDates = blockedDatesRepository.getBlockedDates(member.getEmail());
 			allBlockedDates.addAll(usersBlockedDates);
+
+			//add members accepted dates
+			final ImmutableList<AcceptedDate> usersAcceptedDates = acceptedDatesRepository.getAcceptedDates(member.getEmail());
+			allBlockedDates.addAll(usersAcceptedDates);
 		}
-		// TODO: durch andere Gruppen belegte Termine berücksichtigen
 
 		allBlockedDates = splitOverflowingDates(allBlockedDates);
 

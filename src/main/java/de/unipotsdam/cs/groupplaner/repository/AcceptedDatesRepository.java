@@ -21,6 +21,16 @@ public class AcceptedDatesRepository {
 	@Autowired
 	private DataSource dataSource;
 
+	public ImmutableList<AcceptedDate> getAcceptedDates(final String user) {
+		JdbcTemplate template = new JdbcTemplate(dataSource);
+		return ImmutableList.copyOf(template.query("SELECT " +
+				"acceptedDates.start, acceptedDates.end, acceptedDates.groupId, acceptedDates.id " +
+				"FROM groups " +
+				"INNER JOIN acceptedDates ON groups.id = acceptedDates.groupId " +
+				"LEFT JOIN invites ON groups.id = invites.groupId " +
+				"WHERE invites.invitee=?", new AcceptedDateRowMapper(), user));
+	}
+
 	public ImmutableList<AcceptedDate> getAcceptedDates(final Integer groupId) {
 		JdbcTemplate template = new JdbcTemplate(dataSource);
 		return ImmutableList.copyOf(template.query("SELECT *  FROM acceptedDates WHERE groupId=?", new AcceptedDateRowMapper(), groupId));
