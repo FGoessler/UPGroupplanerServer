@@ -1,4 +1,4 @@
-package de.unipotsdam.cs.groupplaner.repository;
+package de.unipotsdam.cs.groupplaner.group.dao;
 
 import com.google.common.collect.ImmutableList;
 import de.unipotsdam.cs.groupplaner.domain.AcceptedDate;
@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Repository
-public class AcceptedDatesRepository {
+public class AcceptedDatesDAO {
 
 	@Autowired
 	private DataSource dataSource;

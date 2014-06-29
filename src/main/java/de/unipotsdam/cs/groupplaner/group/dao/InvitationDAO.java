@@ -1,4 +1,4 @@
-package de.unipotsdam.cs.groupplaner.repository;
+package de.unipotsdam.cs.groupplaner.group.dao;
 
 import de.unipotsdam.cs.groupplaner.domain.InvitationState;
 import de.unipotsdam.cs.groupplaner.domain.Member;
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public class InvitationRepository {
+public class InvitationDAO {
 
 	@Autowired
 	private DataSource dataSource;

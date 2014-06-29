@@ -1,9 +1,9 @@
-package de.unipotsdam.cs.groupplaner.resource;
+package de.unipotsdam.cs.groupplaner.user.resource;
 
 import de.unipotsdam.cs.groupplaner.auth.SecurityContextFacade;
 import de.unipotsdam.cs.groupplaner.config.PathConfig;
 import de.unipotsdam.cs.groupplaner.domain.User;
-import de.unipotsdam.cs.groupplaner.repository.UserRepository;
+import de.unipotsdam.cs.groupplaner.user.dao.UserDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,17 +19,17 @@ import javax.ws.rs.core.Response;
 public class UserResource {
 
 	@Autowired
-	private UserRepository userRepository;
+	private UserDAO userDAO;
 	@Autowired
 	private SecurityContextFacade securityContextFacade;
 
 	@GET
 	public Response getUser() {
 		String email = securityContextFacade.getCurrentUserEmail();
-		User user = userRepository.getUser(email);
+		User user = userDAO.getUser(email);
 		if (user == null) {
-			userRepository.createUser(new User(email, ""));
-			user = userRepository.getUser(email);
+			userDAO.createUser(new User(email, ""));
+			user = userDAO.getUser(email);
 		}
 
 		return Response.status(Response.Status.OK).entity(user).build();

@@ -1,8 +1,8 @@
-package de.unipotsdam.cs.groupplaner.resource;
+package de.unipotsdam.cs.groupplaner.datefinder.resource;
 
 import de.unipotsdam.cs.groupplaner.config.PathConfig;
+import de.unipotsdam.cs.groupplaner.datefinder.service.PotentialDatesService;
 import de.unipotsdam.cs.groupplaner.domain.PrioritizedDate;
-import de.unipotsdam.cs.groupplaner.service.PotentialDatesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

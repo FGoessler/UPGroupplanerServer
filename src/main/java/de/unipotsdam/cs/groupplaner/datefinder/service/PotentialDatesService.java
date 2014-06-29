@@ -1,4 +1,4 @@
-package de.unipotsdam.cs.groupplaner.service;
+package de.unipotsdam.cs.groupplaner.datefinder.service;
 
 import com.google.common.collect.ImmutableList;
 import de.unipotsdam.cs.groupplaner.domain.PrioritizedDate;

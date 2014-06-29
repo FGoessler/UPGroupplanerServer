@@ -1,8 +1,7 @@
-package de.unipotsdam.cs.groupplaner.resource;
+package de.unipotsdam.cs.groupplaner.timetableimporter;
 
 import de.unipotsdam.cs.groupplaner.auth.SecurityContextFacade;
 import de.unipotsdam.cs.groupplaner.config.PathConfig;
-import de.unipotsdam.cs.groupplaner.service.TimetableImportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

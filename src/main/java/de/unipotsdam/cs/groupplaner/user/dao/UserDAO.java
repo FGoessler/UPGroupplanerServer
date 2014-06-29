@@ -1,4 +1,4 @@
-package de.unipotsdam.cs.groupplaner.repository;
+package de.unipotsdam.cs.groupplaner.user.dao;
 
 import de.unipotsdam.cs.groupplaner.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Repository
-public class UserRepository {
+public class UserDAO {
 
 	@Autowired
 	private DataSource dataSource;

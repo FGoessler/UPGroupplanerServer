@@ -1,10 +1,10 @@
-package de.unipotsdam.cs.groupplaner.service.impl;
+package de.unipotsdam.cs.groupplaner.timetableimporter.impl;
 
 import com.google.common.collect.ImmutableList;
 import de.unipotsdam.cs.groupplaner.config.ExternalAPIEndpoints;
 import de.unipotsdam.cs.groupplaner.domain.BlockedDate;
-import de.unipotsdam.cs.groupplaner.repository.BlockedDatesRepository;
-import de.unipotsdam.cs.groupplaner.service.TimetableImportService;
+import de.unipotsdam.cs.groupplaner.timetableimporter.TimetableImportService;
+import de.unipotsdam.cs.groupplaner.user.dao.BlockedDatesDAO;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -28,7 +28,7 @@ public class TimetableImportServiceImpl implements TimetableImportService {
 	private static final String TIMETABLE_IMPORTER_SOURCE_KEY = "TimetableImporter";
 
 	@Autowired
-	private BlockedDatesRepository blockedDatesRepository;
+	private BlockedDatesDAO blockedDatesDAO;
 	@Autowired
 	private Logger logger;
 
@@ -37,13 +37,13 @@ public class TimetableImportServiceImpl implements TimetableImportService {
 		final List<BlockedDate> blockedDates = loadTimetableDates(userEmail, password);
 
 		if (blockedDates != null) {
-			final ImmutableList<BlockedDate> oldDates = blockedDatesRepository.getBlockedDates(userEmail, TIMETABLE_IMPORTER_SOURCE_KEY);
+			final ImmutableList<BlockedDate> oldDates = blockedDatesDAO.getBlockedDates(userEmail, TIMETABLE_IMPORTER_SOURCE_KEY);
 			for (BlockedDate date : oldDates) {
-				blockedDatesRepository.deleteBlockedDate(date.getId());
+				blockedDatesDAO.deleteBlockedDate(date.getId());
 			}
 
 			for (BlockedDate blockedDate : blockedDates) {
-				blockedDatesRepository.createBlockedDate(blockedDate);
+				blockedDatesDAO.createBlockedDate(blockedDate);
 			}
 		}
 	}

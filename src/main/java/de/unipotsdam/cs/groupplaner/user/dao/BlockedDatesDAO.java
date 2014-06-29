@@ -1,4 +1,4 @@
-package de.unipotsdam.cs.groupplaner.repository;
+package de.unipotsdam.cs.groupplaner.user.dao;
 
 import com.google.common.collect.ImmutableList;
 import de.unipotsdam.cs.groupplaner.domain.BlockedDate;
@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Repository
-public class BlockedDatesRepository {
+public class BlockedDatesDAO {
 
 	@Autowired
 	private DataSource dataSource;

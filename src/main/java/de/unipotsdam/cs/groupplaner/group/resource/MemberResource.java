@@ -1,10 +1,10 @@
-package de.unipotsdam.cs.groupplaner.resource;
+package de.unipotsdam.cs.groupplaner.group.resource;
 
 import com.google.common.base.Preconditions;
 import de.unipotsdam.cs.groupplaner.config.PathConfig;
 import de.unipotsdam.cs.groupplaner.domain.InvitationState;
 import de.unipotsdam.cs.groupplaner.domain.Member;
-import de.unipotsdam.cs.groupplaner.service.GroupService;
+import de.unipotsdam.cs.groupplaner.group.service.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;

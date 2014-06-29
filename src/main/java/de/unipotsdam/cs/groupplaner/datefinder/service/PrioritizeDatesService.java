@@ -1,4 +1,4 @@
-package de.unipotsdam.cs.groupplaner.service.impl;
+package de.unipotsdam.cs.groupplaner.datefinder.service;
 
 import de.unipotsdam.cs.groupplaner.domain.PeriodDate;
 import de.unipotsdam.cs.groupplaner.domain.PrioritizedDate;

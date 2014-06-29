@@ -1,4 +1,4 @@
-package de.unipotsdam.cs.groupplaner.service.impl;
+package de.unipotsdam.cs.groupplaner.datefinder.service;
 
 
 import com.google.common.collect.ImmutableList;
@@ -6,9 +6,9 @@ import de.unipotsdam.cs.groupplaner.domain.AcceptedDate;
 import de.unipotsdam.cs.groupplaner.domain.BlockedDate;
 import de.unipotsdam.cs.groupplaner.domain.Member;
 import de.unipotsdam.cs.groupplaner.domain.PeriodDate;
-import de.unipotsdam.cs.groupplaner.repository.AcceptedDatesRepository;
-import de.unipotsdam.cs.groupplaner.repository.BlockedDatesRepository;
-import de.unipotsdam.cs.groupplaner.service.GroupService;
+import de.unipotsdam.cs.groupplaner.group.dao.AcceptedDatesDAO;
+import de.unipotsdam.cs.groupplaner.group.service.GroupService;
+import de.unipotsdam.cs.groupplaner.user.dao.BlockedDatesDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,9 +21,9 @@ import java.util.List;
 public class DatesAggregationService {
 
 	@Autowired
-	private BlockedDatesRepository blockedDatesRepository;
+	private BlockedDatesDAO blockedDatesDAO;
 	@Autowired
-	private AcceptedDatesRepository acceptedDatesRepository;
+	private AcceptedDatesDAO acceptedDatesDAO;
 	@Autowired
 	private GroupService groupService;
 
@@ -57,11 +57,11 @@ public class DatesAggregationService {
 		List<PeriodDate> allBlockedDates = new ArrayList<PeriodDate>();
 		for (Member member : members) {
 			// add members blocked dates
-			final ImmutableList<BlockedDate> usersBlockedDates = blockedDatesRepository.getBlockedDates(member.getEmail());
+			final ImmutableList<BlockedDate> usersBlockedDates = blockedDatesDAO.getBlockedDates(member.getEmail());
 			allBlockedDates.addAll(usersBlockedDates);
 
 			//add members accepted dates
-			final ImmutableList<AcceptedDate> usersAcceptedDates = acceptedDatesRepository.getAcceptedDates(member.getEmail());
+			final ImmutableList<AcceptedDate> usersAcceptedDates = acceptedDatesDAO.getAcceptedDates(member.getEmail());
 			allBlockedDates.addAll(usersAcceptedDates);
 		}
 

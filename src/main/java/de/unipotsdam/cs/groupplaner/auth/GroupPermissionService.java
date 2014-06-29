@@ -2,7 +2,7 @@ package de.unipotsdam.cs.groupplaner.auth;
 
 import de.unipotsdam.cs.groupplaner.domain.InvitationState;
 import de.unipotsdam.cs.groupplaner.domain.Member;
-import de.unipotsdam.cs.groupplaner.repository.InvitationRepository;
+import de.unipotsdam.cs.groupplaner.group.dao.InvitationDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +18,7 @@ import java.util.List;
 public class GroupPermissionService {
 
 	@Autowired
-	private InvitationRepository invitationRepository;
+	private InvitationDAO invitationDAO;
 
 	/**
 	 * A user has read permissions if he/she is a member of the group or was invited to the group.
@@ -48,7 +48,7 @@ public class GroupPermissionService {
 	}
 
 	private Boolean isUserMemberOfGroup(final String useremail, final Integer groupId) {
-		final List<Member> membersOfGroup = invitationRepository.getMembersOfGroup(groupId);
+		final List<Member> membersOfGroup = invitationDAO.getMembersOfGroup(groupId);
 
 		for (Member member : membersOfGroup) {
 			if (member.getEmail().equals(useremail) && member.getInvitationState().equals(InvitationState.ACCEPTED)) {
@@ -60,7 +60,7 @@ public class GroupPermissionService {
 	}
 
 	private Boolean isUserMemberOfGroupOrInvitedToGroup(final String useremail, final Integer groupId) {
-		final List<Member> membersOfGroup = invitationRepository.getMembersOfGroup(groupId);
+		final List<Member> membersOfGroup = invitationDAO.getMembersOfGroup(groupId);
 
 		for (Member member : membersOfGroup) {
 			if (member.getEmail().equals(useremail) && (member.getInvitationState().equals(InvitationState.ACCEPTED) || member.getInvitationState().equals(InvitationState.INVITED))) {

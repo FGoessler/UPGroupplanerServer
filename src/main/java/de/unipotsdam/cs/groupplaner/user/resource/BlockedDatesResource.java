@@ -1,11 +1,11 @@
-package de.unipotsdam.cs.groupplaner.resource;
+package de.unipotsdam.cs.groupplaner.user.resource;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import de.unipotsdam.cs.groupplaner.auth.SecurityContextFacade;
 import de.unipotsdam.cs.groupplaner.config.PathConfig;
 import de.unipotsdam.cs.groupplaner.domain.BlockedDate;
-import de.unipotsdam.cs.groupplaner.repository.BlockedDatesRepository;
+import de.unipotsdam.cs.groupplaner.user.dao.BlockedDatesDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.access.AccessDeniedException;
@@ -23,7 +23,7 @@ import java.util.Map;
 public class BlockedDatesResource {
 
 	@Autowired
-	private BlockedDatesRepository blockedDatesRepository;
+	private BlockedDatesDAO blockedDatesDAO;
 	@Autowired
 	private SecurityContextFacade securityContextFacade;
 
@@ -31,9 +31,9 @@ public class BlockedDatesResource {
 	public Response getAllBlockedDates(@QueryParam("source") final String sourceFilter) {
 		final ImmutableList<BlockedDate> blockedDates;
 		if (sourceFilter == null) {
-			blockedDates = blockedDatesRepository.getBlockedDates(securityContextFacade.getCurrentUserEmail());
+			blockedDates = blockedDatesDAO.getBlockedDates(securityContextFacade.getCurrentUserEmail());
 		} else {
-			blockedDates = blockedDatesRepository.getBlockedDates(securityContextFacade.getCurrentUserEmail(), sourceFilter);
+			blockedDates = blockedDatesDAO.getBlockedDates(securityContextFacade.getCurrentUserEmail(), sourceFilter);
 		}
 
 		return Response.status(Response.Status.OK).entity(blockedDates).build();
@@ -50,7 +50,7 @@ public class BlockedDatesResource {
 
 		BlockedDate newBlockedDate = new BlockedDate((Integer) data.get("start"), (Integer) data.get("end"), securityContextFacade.getCurrentUserEmail(), (String) data.get("source"));
 
-		final BlockedDate createdBlockedDate = blockedDatesRepository.getBlockedDate(blockedDatesRepository.createBlockedDate(newBlockedDate));
+		final BlockedDate createdBlockedDate = blockedDatesDAO.getBlockedDate(blockedDatesDAO.createBlockedDate(newBlockedDate));
 
 		return Response.status(Response.Status.CREATED).entity(createdBlockedDate).build();
 	}
@@ -74,11 +74,11 @@ public class BlockedDatesResource {
 		checkAndGetBlockedDate(id);
 
 		BlockedDate modifiedBlockedDate = new BlockedDate(id, (Integer) data.get("start"), (Integer) data.get("end"), securityContextFacade.getCurrentUserEmail(), (String) data.get("source"));
-		final Boolean updateSuccessful = blockedDatesRepository.updateBlockedDate(modifiedBlockedDate);
+		final Boolean updateSuccessful = blockedDatesDAO.updateBlockedDate(modifiedBlockedDate);
 		if (!updateSuccessful) {
 			throw new EmptyResultDataAccessException(1);
 		}
-		modifiedBlockedDate = blockedDatesRepository.getBlockedDate(modifiedBlockedDate.getId());
+		modifiedBlockedDate = blockedDatesDAO.getBlockedDate(modifiedBlockedDate.getId());
 
 		return Response.status(Response.Status.OK).entity(modifiedBlockedDate).build();
 	}
@@ -88,13 +88,13 @@ public class BlockedDatesResource {
 	public Response deleteBlockedDate(@PathParam("id") final Integer id) {
 		checkAndGetBlockedDate(id);
 
-		blockedDatesRepository.deleteBlockedDate(id);
+		blockedDatesDAO.deleteBlockedDate(id);
 
 		return Response.status(Response.Status.NO_CONTENT).build();
 	}
 
 	private BlockedDate checkAndGetBlockedDate(final Integer id) {
-		final BlockedDate blockedDate = blockedDatesRepository.getBlockedDate(id);
+		final BlockedDate blockedDate = blockedDatesDAO.getBlockedDate(id);
 
 		if (!blockedDate.getUserEmail().equals(securityContextFacade.getCurrentUserEmail())) {
 			throw new AccessDeniedException("This date does not belong to the specified user.");

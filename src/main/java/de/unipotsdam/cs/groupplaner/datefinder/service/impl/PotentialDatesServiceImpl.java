@@ -1,9 +1,11 @@
-package de.unipotsdam.cs.groupplaner.service.impl;
+package de.unipotsdam.cs.groupplaner.datefinder.service.impl;
 
 import com.google.common.collect.ImmutableList;
+import de.unipotsdam.cs.groupplaner.datefinder.service.DatesAggregationService;
+import de.unipotsdam.cs.groupplaner.datefinder.service.PotentialDatesService;
+import de.unipotsdam.cs.groupplaner.datefinder.service.PrioritizeDatesService;
 import de.unipotsdam.cs.groupplaner.domain.PeriodDate;
 import de.unipotsdam.cs.groupplaner.domain.PrioritizedDate;
-import de.unipotsdam.cs.groupplaner.service.PotentialDatesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;

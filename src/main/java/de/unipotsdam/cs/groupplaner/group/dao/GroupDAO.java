@@ -1,4 +1,4 @@
-package de.unipotsdam.cs.groupplaner.repository;
+package de.unipotsdam.cs.groupplaner.group.dao;
 
 import com.google.common.collect.ImmutableList;
 import de.unipotsdam.cs.groupplaner.domain.Group;
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public class GroupRepository {
+public class GroupDAO {
 
 	@Autowired
 	private DataSource dataSource;
