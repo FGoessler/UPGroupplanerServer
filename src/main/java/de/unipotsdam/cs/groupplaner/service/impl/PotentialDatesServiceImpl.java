@@ -28,6 +28,7 @@ public class PotentialDatesServiceImpl implements PotentialDatesService {
 	@PreAuthorize("@groupPermissionService.hasReadPermission(authentication, #groupId)")
 	public ImmutableList<PeriodDate> calculatePotentialDates(final Integer groupId) {
 		// 1.) Alle BlockedDates aller Mitglieder laden
+		// TODO: durch andere Gruppen belegte Termine berücksichtigen
 		final List<Member> members = groupService.getMembers(groupId);
 		final List<PeriodDate> allBlockedDates = new ArrayList<PeriodDate>();
 		for (Member member : members) {
@@ -67,7 +68,7 @@ public class PotentialDatesServiceImpl implements PotentialDatesService {
 			if (prevDate.getStart() <= curDate.getStart() && curDate.getStart() <= prevDate.getEnd()) {
 				//combine dates by creating a new date and replacing the old one with the new one
 				if (prevDate.getEnd() < curDate.getEnd()) {
-					PeriodDate newDate = new PeriodDate(prevDate.getStartAsPartial(), curDate.getEndAsPartial());
+					PeriodDate newDate = new PeriodDate(prevDate.getStart(), curDate.getEnd());
 					int index = allBlockedDates.indexOf(prevDate);
 					allBlockedDates.set(index, newDate);
 					prevDate = newDate;
@@ -96,6 +97,7 @@ public class PotentialDatesServiceImpl implements PotentialDatesService {
 			availableDates.add(new PeriodDate(curPeriodStart, 72359));
 		}
 
+		// TODO: also output blocked dates and give every date "optimum" value between -10 and 10
 
 		// 6.) (optional) verfügbare Zeiten mit Qualität bewerten
 		// TODO: Qualitätsbewertung
