@@ -85,9 +85,17 @@ public class TimetableImportServiceImpl implements TimetableImportService {
 				final JSONArray dates = course.getJSONArray("dates");
 				for (int j = 0; j < dates.length(); j++) {
 					final JSONObject date = dates.getJSONObject(j);
-					final String begin = date.getString("weekdaynr") + date.getString("begin");
-					final String end = date.getString("weekdaynr") + date.getString("end");
-					final BlockedDate blocked = new BlockedDate(Integer.parseInt(begin), Integer.parseInt(end), userEmail, TIMETABLE_IMPORTER_SOURCE_KEY);
+					final Integer weekday = Integer.parseInt(date.getString("weekdaynr")) - 1;    // api counts weekdays 1(=monday) to 7 , we count 0(=monday) to 6
+
+					final Integer beginHours = Integer.parseInt(date.getString("begin").substring(0, 2));
+					final Integer beginMinutes = Integer.parseInt(date.getString("begin").substring(2, 4));
+					final Integer begin = weekday * 24 * 60 + beginHours * 60 + beginMinutes;
+
+					final Integer endHours = Integer.parseInt(date.getString("end").substring(0, 2));
+					final Integer endMinutes = Integer.parseInt(date.getString("end").substring(2, 4));
+					final Integer end = weekday * 24 * 60 + endHours * 60 + endMinutes;
+
+					final BlockedDate blocked = new BlockedDate(begin, end, userEmail, TIMETABLE_IMPORTER_SOURCE_KEY);
 					timetableDates.add(blocked);
 				}
 			}

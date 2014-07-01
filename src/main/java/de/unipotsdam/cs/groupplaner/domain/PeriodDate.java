@@ -1,25 +1,21 @@
 package de.unipotsdam.cs.groupplaner.domain;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class PeriodDate {
 
-	public static final int END_OF_WEEK = 72359;
-	public static final int START_OF_WEEK = 10000;
+	public static final int END_OF_WEEK = 10080;    // 7 * 24 * 60
+	public static final int START_OF_WEEK = 0;
 
 	/**
-	 * The starting point represented as 5 digit integer.
-	 * 1. 		digit: 	weekday (1=monday , ... , 7=sunday)
-	 * 2. + 3. 	digit: 	hour in 24h format
-	 * 4. + 5. 	digit: 	minutes
+	 * The starting point represented as minutes from beginning of the week (0:00 monday).
 	 */
 	protected final Integer start;
 	/**
-	 * The ending point represented as 5 digit integer.
-	 * 1. 		digit: 	weekday (1=monday , ... , 7=sunday)
-	 * 2. + 3. 	digit: 	hour in 24h format
-	 * 4. + 5. 	digit: 	minutes
+	 * The ending point represented as minutes from beginning of the week (0:00 monday).
 	 */
 	protected final Integer end;
 
@@ -36,4 +32,10 @@ public class PeriodDate {
 		return end;
 	}
 
+	@JsonIgnore
+	public Integer getDuration() {
+		Integer duration = end - start;
+		if (duration < 0) duration += END_OF_WEEK;
+		return duration;
+	}
 }
