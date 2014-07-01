@@ -13,21 +13,11 @@ import java.util.List;
 @Service
 public class PrioritizeDatesService {
 
-	public List<PrioritizedDate> prioritizeDates(final List<PeriodDate> allBlockedDates, final List<PeriodDate> availableDates) {
-		final List<PrioritizedDate> prioritizedDates = new ArrayList<PrioritizedDate>();
-		for (PeriodDate date : allBlockedDates) {
-			prioritizedDates.add(new PrioritizedDate(date, PrioritizedDate.PRIORITY_BLOCKED));
-		}
-		for (PeriodDate date : availableDates) {
-			prioritizedDates.add(new PrioritizedDate(date, PrioritizedDate.PRIORITY_NEUTRAL));
-		}
-		Collections.sort(prioritizedDates, new Comparator<PeriodDate>() {
-			@Override
-			public int compare(PeriodDate date1, PeriodDate date2) {
-				return date1.getStart().compareTo(date2.getStart());
-			}
-		});
+	public static final int MAX_OPTIMAL_DATE_DURATION = 60;
+	public static final int MIN_OPTIMAL_DATE_DURATION = 30;
 
+	public List<PrioritizedDate> prioritizeDates(final List<PeriodDate> allBlockedDates, final List<PeriodDate> availableDates) {
+		final List<PrioritizedDate> prioritizedDates = combineSortAndBasePrioritizeDates(allBlockedDates, availableDates);
 
 		int currentIndex = 0;
 		while (currentIndex < prioritizedDates.size()) {
@@ -46,7 +36,29 @@ public class PrioritizeDatesService {
 		return prioritizedDates;
 	}
 
-	// Convert neutral dates near blocked dates to optimal dates.
+	/**
+	 * Combine all dates into one list. Blocked dates get PRIORITY_BLOCKED all others get PRIORITY_NEUTRAL.
+	 */
+	private List<PrioritizedDate> combineSortAndBasePrioritizeDates(List<PeriodDate> allBlockedDates, List<PeriodDate> availableDates) {
+		final List<PrioritizedDate> prioritizedDates = new ArrayList<PrioritizedDate>();
+		for (PeriodDate date : allBlockedDates) {
+			prioritizedDates.add(new PrioritizedDate(date, PrioritizedDate.PRIORITY_BLOCKED));
+		}
+		for (PeriodDate date : availableDates) {
+			prioritizedDates.add(new PrioritizedDate(date, PrioritizedDate.PRIORITY_NEUTRAL));
+		}
+		Collections.sort(prioritizedDates, new Comparator<PeriodDate>() {
+			@Override
+			public int compare(PeriodDate date1, PeriodDate date2) {
+				return date1.getStart().compareTo(date2.getStart());
+			}
+		});
+		return prioritizedDates;
+	}
+
+	/**
+	 * Convert neutral dates near blocked dates to optimal dates depending on min and max optimal date duration.
+	 */
 	private List<PrioritizedDate> analyzeDate(final PrioritizedDate predecessorDate, final PrioritizedDate date, final PrioritizedDate successorDate) {
 		if (date.getPriority() == PrioritizedDate.PRIORITY_BLOCKED) {
 			return Lists.newArrayList(date);
@@ -54,36 +66,36 @@ public class PrioritizeDatesService {
 			final List<PrioritizedDate> dates = new ArrayList<PrioritizedDate>();
 			final Integer duration = date.getDuration();
 			if (predecessorDate.getPriority() == PrioritizedDate.PRIORITY_BLOCKED && successorDate.getPriority() == PrioritizedDate.PRIORITY_BLOCKED) {
-				if (duration > 120) {
-					dates.add(new PrioritizedDate(date.getStart(), date.getStart() + 60, PrioritizedDate.PRIORITY_OPTIMAL));
-					dates.add(new PrioritizedDate(date.getStart() + 60, date.getEnd() - 60, PrioritizedDate.PRIORITY_NEUTRAL));
-					dates.add(new PrioritizedDate(date.getEnd() - 60, date.getEnd(), PrioritizedDate.PRIORITY_OPTIMAL));
-				} else if (duration > 60 && duration <= 120) {
+				if (duration > MAX_OPTIMAL_DATE_DURATION * 2) {
+					dates.add(new PrioritizedDate(date.getStart(), date.getStart() + MAX_OPTIMAL_DATE_DURATION, PrioritizedDate.PRIORITY_OPTIMAL));
+					dates.add(new PrioritizedDate(date.getStart() + MAX_OPTIMAL_DATE_DURATION, date.getEnd() - MAX_OPTIMAL_DATE_DURATION, PrioritizedDate.PRIORITY_NEUTRAL));
+					dates.add(new PrioritizedDate(date.getEnd() - MAX_OPTIMAL_DATE_DURATION, date.getEnd(), PrioritizedDate.PRIORITY_OPTIMAL));
+				} else if (duration > MAX_OPTIMAL_DATE_DURATION && duration <= MAX_OPTIMAL_DATE_DURATION * 2) {
 					int middle = date.getStart() + (int) Math.floor(duration / 2);
 					dates.add(new PrioritizedDate(date.getStart(), middle, PrioritizedDate.PRIORITY_OPTIMAL));
 					dates.add(new PrioritizedDate(middle, date.getEnd(), PrioritizedDate.PRIORITY_OPTIMAL));
-				} else if (duration >= 30) {
-					dates.add(new PrioritizedDate(date.getStart(), date.getEnd(), PrioritizedDate.PRIORITY_OPTIMAL));
+				} else if (duration >= MIN_OPTIMAL_DATE_DURATION) {
+					dates.add(new PrioritizedDate(date, PrioritizedDate.PRIORITY_OPTIMAL));
 				} else {
-					dates.add(new PrioritizedDate(date.getStart(), date.getEnd(), PrioritizedDate.PRIORITY_NEUTRAL));
+					dates.add(new PrioritizedDate(date, PrioritizedDate.PRIORITY_NEUTRAL));
 				}
 			} else if (predecessorDate.getPriority() == PrioritizedDate.PRIORITY_NEUTRAL && successorDate.getPriority() == PrioritizedDate.PRIORITY_BLOCKED) {
-				if (duration > 60) {
-					dates.add(new PrioritizedDate(date.getStart(), date.getEnd() - 60, PrioritizedDate.PRIORITY_NEUTRAL));
-					dates.add(new PrioritizedDate(date.getEnd() - 60, date.getEnd(), PrioritizedDate.PRIORITY_OPTIMAL));
-				} else if (duration >= 30) {
-					dates.add(new PrioritizedDate(date.getStart(), date.getEnd(), PrioritizedDate.PRIORITY_OPTIMAL));
+				if (duration > MAX_OPTIMAL_DATE_DURATION) {
+					dates.add(new PrioritizedDate(date.getStart(), date.getEnd() - MAX_OPTIMAL_DATE_DURATION, PrioritizedDate.PRIORITY_NEUTRAL));
+					dates.add(new PrioritizedDate(date.getEnd() - MAX_OPTIMAL_DATE_DURATION, date.getEnd(), PrioritizedDate.PRIORITY_OPTIMAL));
+				} else if (duration >= MIN_OPTIMAL_DATE_DURATION) {
+					dates.add(new PrioritizedDate(date, PrioritizedDate.PRIORITY_OPTIMAL));
 				} else {
-					dates.add(new PrioritizedDate(date.getStart(), date.getEnd(), PrioritizedDate.PRIORITY_NEUTRAL));
+					dates.add(new PrioritizedDate(date, PrioritizedDate.PRIORITY_NEUTRAL));
 				}
 			} else if (predecessorDate.getPriority() == PrioritizedDate.PRIORITY_BLOCKED && successorDate.getPriority() == PrioritizedDate.PRIORITY_NEUTRAL) {
-				if (duration > 60) {
-					dates.add(new PrioritizedDate(date.getStart(), date.getStart() + 60, PrioritizedDate.PRIORITY_OPTIMAL));
-					dates.add(new PrioritizedDate(date.getStart() + 60, date.getEnd(), PrioritizedDate.PRIORITY_NEUTRAL));
-				} else if (duration >= 30) {
-					dates.add(new PrioritizedDate(date.getStart(), date.getEnd(), PrioritizedDate.PRIORITY_OPTIMAL));
+				if (duration > MAX_OPTIMAL_DATE_DURATION) {
+					dates.add(new PrioritizedDate(date.getStart(), date.getStart() + MAX_OPTIMAL_DATE_DURATION, PrioritizedDate.PRIORITY_OPTIMAL));
+					dates.add(new PrioritizedDate(date.getStart() + MAX_OPTIMAL_DATE_DURATION, date.getEnd(), PrioritizedDate.PRIORITY_NEUTRAL));
+				} else if (duration >= MIN_OPTIMAL_DATE_DURATION) {
+					dates.add(new PrioritizedDate(date, PrioritizedDate.PRIORITY_OPTIMAL));
 				} else {
-					dates.add(new PrioritizedDate(date.getStart(), date.getEnd(), PrioritizedDate.PRIORITY_NEUTRAL));
+					dates.add(new PrioritizedDate(date, PrioritizedDate.PRIORITY_NEUTRAL));
 				}
 			}
 			return dates;
