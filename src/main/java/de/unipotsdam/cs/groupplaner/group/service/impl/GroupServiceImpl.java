@@ -54,7 +54,7 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	@Override
-	@PreAuthorize("@groupPermissionService.hasWritePermission(authentication, #updatedGroup)")
+	@PreAuthorize("@groupPermissionService.hasWritePermission(authentication, #updatedGroup.getId())")
 	public Group updateGroup(final Group updatedGroup) {
 		if (!groupDAO.updateGroup(updatedGroup)) {
 			throw new EmptyResultDataAccessException(1);
