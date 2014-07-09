@@ -71,36 +71,40 @@ public class PrioritizeDatesService {
 		} else {
 			final List<PrioritizedDate> dates = new ArrayList<PrioritizedDate>();
 			final Integer duration = date.getDuration();
+
+			// date is between two blocked dates
 			if (predecessorDate.getPriority() == PrioritizedDate.PRIORITY_BLOCKED && successorDate.getPriority() == PrioritizedDate.PRIORITY_BLOCKED) {
-				if (duration > MAX_OPTIMAL_DATE_DURATION * 2) {
+				if (duration > MAX_OPTIMAL_DATE_DURATION * 2) {	// two optimal dates fit in with break between
 					dates.add(new PrioritizedDate(date.getStart(), date.getStart() + MAX_OPTIMAL_DATE_DURATION, PrioritizedDate.PRIORITY_OPTIMAL));
 					dates.add(new PrioritizedDate(date.getStart() + MAX_OPTIMAL_DATE_DURATION, date.getEnd() - MAX_OPTIMAL_DATE_DURATION, PrioritizedDate.PRIORITY_NEUTRAL));
 					dates.add(new PrioritizedDate(date.getEnd() - MAX_OPTIMAL_DATE_DURATION, date.getEnd(), PrioritizedDate.PRIORITY_OPTIMAL));
-				} else if (duration > MAX_OPTIMAL_DATE_DURATION && duration <= MAX_OPTIMAL_DATE_DURATION * 2) {
+				} else if (duration > MAX_OPTIMAL_DATE_DURATION && duration <= MAX_OPTIMAL_DATE_DURATION * 2) {	// two optimal dates fit in without break between
 					int middle = date.getStart() + (int) Math.floor(duration / 2);
 					dates.add(new PrioritizedDate(date.getStart(), middle, PrioritizedDate.PRIORITY_OPTIMAL));
 					dates.add(new PrioritizedDate(middle, date.getEnd(), PrioritizedDate.PRIORITY_OPTIMAL));
-				} else if (duration >= MIN_OPTIMAL_DATE_DURATION) {
+				} else if (duration >= MIN_OPTIMAL_DATE_DURATION) {	// one optimal date fits in
 					dates.add(new PrioritizedDate(date, PrioritizedDate.PRIORITY_OPTIMAL));
-				} else {
+				} else {		// no optimal date fits in
 					dates.add(new PrioritizedDate(date, PrioritizedDate.PRIORITY_NEUTRAL));
 				}
+			// date is before a blocked date
 			} else if (predecessorDate.getPriority() == PrioritizedDate.PRIORITY_NEUTRAL && successorDate.getPriority() == PrioritizedDate.PRIORITY_BLOCKED) {
-				if (duration > MAX_OPTIMAL_DATE_DURATION) {
+				if (duration > MAX_OPTIMAL_DATE_DURATION) {				// one optimal fits in with time before
 					dates.add(new PrioritizedDate(date.getStart(), date.getEnd() - MAX_OPTIMAL_DATE_DURATION, PrioritizedDate.PRIORITY_NEUTRAL));
 					dates.add(new PrioritizedDate(date.getEnd() - MAX_OPTIMAL_DATE_DURATION, date.getEnd(), PrioritizedDate.PRIORITY_OPTIMAL));
-				} else if (duration >= MIN_OPTIMAL_DATE_DURATION) {
+				} else if (duration >= MIN_OPTIMAL_DATE_DURATION) {		// one optimal fits in without time before
 					dates.add(new PrioritizedDate(date, PrioritizedDate.PRIORITY_OPTIMAL));
-				} else {
+				} else {		// no optimal date fits in
 					dates.add(new PrioritizedDate(date, PrioritizedDate.PRIORITY_NEUTRAL));
 				}
+			// date is after a blocked date
 			} else if (predecessorDate.getPriority() == PrioritizedDate.PRIORITY_BLOCKED && successorDate.getPriority() == PrioritizedDate.PRIORITY_NEUTRAL) {
-				if (duration > MAX_OPTIMAL_DATE_DURATION) {
+				if (duration > MAX_OPTIMAL_DATE_DURATION) {				// one optimal fits in with time after
 					dates.add(new PrioritizedDate(date.getStart(), date.getStart() + MAX_OPTIMAL_DATE_DURATION, PrioritizedDate.PRIORITY_OPTIMAL));
 					dates.add(new PrioritizedDate(date.getStart() + MAX_OPTIMAL_DATE_DURATION, date.getEnd(), PrioritizedDate.PRIORITY_NEUTRAL));
-				} else if (duration >= MIN_OPTIMAL_DATE_DURATION) {
+				} else if (duration >= MIN_OPTIMAL_DATE_DURATION) {		// one optimal fits in without time after
 					dates.add(new PrioritizedDate(date, PrioritizedDate.PRIORITY_OPTIMAL));
-				} else {
+				} else {		// no optimal date fits in
 					dates.add(new PrioritizedDate(date, PrioritizedDate.PRIORITY_NEUTRAL));
 				}
 			}
@@ -109,7 +113,7 @@ public class PrioritizeDatesService {
 	}
 
 	/**
-	 * Reduce priority of all dates between 8pm and 8am by 3.
+	 * Reduces the priority of all dates in the list between 8pm and 8am by 3.
 	 */
 	private List<PrioritizedDate> downVoteNightDates(List<PrioritizedDate> allDates) {
 		int currentIndex = 0;
@@ -137,6 +141,10 @@ public class PrioritizeDatesService {
 				date.getEndWeekday() > date.getStartWeekday();
 	}
 
+	/**
+	 * Splits a given date into several dates with different priorities depending on whether they are at night or not.
+	 * It uses a recursive approach by cutting of the beginning of the date and calling itself with the rest of the date.
+	 */
 	List<PrioritizedDate> splitAndMarkNightDate(final PrioritizedDate date) {
 		final List<PrioritizedDate> resultingDates = Lists.newArrayList();
 
@@ -148,15 +156,15 @@ public class PrioritizeDatesService {
 		if (date.getStartHour() < EIGHT_AM && date.getEnd() > cutPoint_8am) {
 			resultingDates.add(new PrioritizedDate(date.getStart(), cutPoint_8am, date.getPriority() - NIGHT_DATE_PRIORITY_MALUS));
 			resultingDates.addAll(splitAndMarkNightDate(new PrioritizedDate(cutPoint_8am, date.getEnd(), date.getPriority())));
-			// cut of part starting between 8am and 8pm and ending after 8pm
+		// cut of part starting between 8am and 8pm and ending after 8pm
 		} else if (date.getStartHour() < EIGHT_PM && date.getEnd() > cutPoint_8pm) {
 			resultingDates.add(new PrioritizedDate(date.getStart(), cutPoint_8pm, date.getPriority()));
 			resultingDates.addAll(splitAndMarkNightDate(new PrioritizedDate(cutPoint_8pm, date.getEnd(), date.getPriority())));
-			// cut of part starting after 8pm and ending after 8am of the next day
+		// cut of part starting after 8pm and ending after 8am of the next day
 		} else if (date.getStartHour() >= EIGHT_PM && date.getEnd() > cutPoint_8amNextDay) {
 			resultingDates.add(new PrioritizedDate(date.getStart(), cutPoint_8amNextDay, date.getPriority() - NIGHT_DATE_PRIORITY_MALUS));
 			resultingDates.addAll(splitAndMarkNightDate(new PrioritizedDate(cutPoint_8amNextDay, date.getEnd(), date.getPriority())));
-			// any other date does not overlap a 8am or 8pm border and doesn't need to be split any further
+		// any other date does not overlap a 8am or 8pm border and doesn't need to be split any further
 		} else {
 			if (isNightDate(date)) {
 				resultingDates.add(new PrioritizedDate(date, date.getPriority() - NIGHT_DATE_PRIORITY_MALUS));
