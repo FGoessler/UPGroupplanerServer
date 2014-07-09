@@ -16,7 +16,14 @@ public class PrioritizedDate extends PeriodDate {
 
 	public PrioritizedDate(Integer start, Integer end, Integer priority) {
 		super(start, end);
-		this.priority = priority;
+
+		if (priority < PRIORITY_BLOCKED) {
+			this.priority = PRIORITY_BLOCKED;
+		} else if (priority > PRIORITY_OPTIMAL) {
+			this.priority = PRIORITY_OPTIMAL;
+		} else {
+			this.priority = priority;
+		}
 	}
 
 	public PrioritizedDate(PeriodDate periodDate, Integer priority) {
