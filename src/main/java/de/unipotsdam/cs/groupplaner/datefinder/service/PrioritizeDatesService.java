@@ -17,7 +17,7 @@ public class PrioritizeDatesService {
 	public static final int MIN_OPTIMAL_DATE_DURATION = 30;
 
 	public List<PrioritizedDate> prioritizeDates(final List<PeriodDate> allBlockedDates, final List<PeriodDate> availableDates) {
-		final List<PrioritizedDate> prioritizedDates = combineSortAndBasePrioritizeDates(allBlockedDates, availableDates);
+		List<PrioritizedDate> prioritizedDates = combineSortAndBasePrioritizeDates(allBlockedDates, availableDates);
 
 		int currentIndex = 0;
 		while (currentIndex < prioritizedDates.size()) {
@@ -32,6 +32,7 @@ public class PrioritizeDatesService {
 			currentIndex += analysisResultedDates.size();
 		}
 
+		prioritizedDates = downVoteNightDates(prioritizedDates);
 
 		return prioritizedDates;
 	}
@@ -102,7 +103,74 @@ public class PrioritizeDatesService {
 		}
 	}
 
-	private PrioritizedDate getPredecessor(List<PrioritizedDate> prioritizedDates, int currentIndex) {
+	/**
+	 * Reduce priority of all dates between 8pm and 8am by 3.
+	 */
+	private List<PrioritizedDate> downVoteNightDates(List<PrioritizedDate> allDates) {
+		int currentIndex = 0;
+		while (currentIndex < allDates.size()) {
+			final PrioritizedDate date = allDates.get(currentIndex);
+
+			if (isNightDate(date)) {
+				final List<PrioritizedDate> analysisResultedDates = splitAndMarkNightDate(date, date.getPriority());
+				allDates.remove(currentIndex);
+				allDates.addAll(currentIndex, analysisResultedDates);
+				currentIndex += analysisResultedDates.size();
+			} else {
+				currentIndex++;
+			}
+		}
+
+		return allDates;
+	}
+
+	private boolean isNightDate(final PeriodDate date) {
+		return date.getStartHour() >= 20 || date.getStartHour() < 8 || date.getEndHour() >= 20 || date.getEndHour() <= 8 || date.getEndWeekday() > date.getStartWeekday();
+	}
+
+	List<PrioritizedDate> splitAndMarkNightDate(final PrioritizedDate date, final Integer origDatePrio) {
+		List<PrioritizedDate> resultingDates = Lists.newArrayList();
+
+		if (date.getStartHour() < 8) {
+			final int cutPoint = date.getEndWeekday() * 24 * 60 + 8 * 60;
+			PrioritizedDate prevDate = new PrioritizedDate(date.getStart(), cutPoint, origDatePrio - 3);
+			resultingDates.add(prevDate);
+
+			final List<PrioritizedDate> dates = splitAndMarkNightDate(new PrioritizedDate(cutPoint, date.getEnd(), origDatePrio), origDatePrio);
+			resultingDates.addAll(dates);
+		} else if (date.getStartHour() < 20 && date.getEnd() > (date.getStartWeekday() * 24 * 60 + 20 * 60)) {
+			final int cutPoint = date.getStartWeekday() * 24 * 60 + 20 * 60;
+			PrioritizedDate prevDate = new PrioritizedDate(date.getStart(), cutPoint, origDatePrio);
+			resultingDates.add(prevDate);
+
+			final List<PrioritizedDate> dates = splitAndMarkNightDate(new PrioritizedDate(cutPoint, date.getEnd(), origDatePrio), origDatePrio);
+			resultingDates.addAll(dates);
+		} else if (date.getStartHour() >= 20 && ((date.getEndHour() >= 8 && date.getEndWeekday() > date.getStartWeekday()) || date.getEndWeekday() > date.getStartWeekday() + 1)) {
+			final int cutPoint = (date.getStartWeekday() + 1) * 24 * 60 + 8 * 60;
+			PrioritizedDate prevDate = new PrioritizedDate(date.getStart(), cutPoint, origDatePrio - 3);
+			resultingDates.add(prevDate);
+
+			final List<PrioritizedDate> dates = splitAndMarkNightDate(new PrioritizedDate(cutPoint, date.getEnd(), origDatePrio), origDatePrio);
+			resultingDates.addAll(dates);
+		} else {
+			if (isNightDate(date)) {
+				resultingDates.add(new PrioritizedDate(date, origDatePrio - 3));
+			} else {
+				resultingDates.add(date);
+			}
+		}
+
+		Collections.sort(resultingDates, new Comparator<PeriodDate>() {
+			@Override
+			public int compare(PeriodDate date1, PeriodDate date2) {
+				return date1.getStart().compareTo(date2.getStart());
+			}
+		});
+
+		return resultingDates;
+	}
+
+	private PrioritizedDate getPredecessor(final List<PrioritizedDate> prioritizedDates, final int currentIndex) {
 		PrioritizedDate predecessorDate;
 		if (currentIndex == 0) {
 			predecessorDate = prioritizedDates.get(prioritizedDates.size() - 1);
@@ -112,7 +180,7 @@ public class PrioritizeDatesService {
 		return predecessorDate;
 	}
 
-	private PrioritizedDate getSuccessor(List<PrioritizedDate> prioritizedDates, int currentIndex) {
+	private PrioritizedDate getSuccessor(final List<PrioritizedDate> prioritizedDates, final int currentIndex) {
 		PrioritizedDate successorDate;
 		if (currentIndex == prioritizedDates.size() - 1) {
 			successorDate = prioritizedDates.get(0);
@@ -126,7 +194,6 @@ public class PrioritizeDatesService {
 	/*
 
 	Fuer Qualitaetsbewertung:
-	- Nachttermine abwerten -> in Schleife alle Dates zwischen 20 und 8 Uhr mit -3 abwerten (Dates gegebenenfalls splitten)
 	- Ueberlappungen von BlockedDates zaehlen -> erfordert erweiterten BlockedDates Datentyp und AggregationService
 
 	Idee:

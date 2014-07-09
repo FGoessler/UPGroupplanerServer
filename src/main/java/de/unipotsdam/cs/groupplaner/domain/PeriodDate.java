@@ -38,4 +38,34 @@ public class PeriodDate {
 		if (duration < 0) duration += END_OF_WEEK;
 		return duration;
 	}
+
+	@JsonIgnore
+	public Integer getStartWeekday() {
+		return (int) Math.floor(start / (24 * 60));
+	}
+
+	@JsonIgnore
+	public Integer getStartHour() {
+		return (int) Math.floor((start - (getStartWeekday() * 24 * 60)) / 60);
+	}
+
+	@JsonIgnore
+	public Integer getStartMinute() {
+		return start - (getStartWeekday() * 24 * 60) - getStartHour() * 60;
+	}
+
+	@JsonIgnore
+	public Integer getEndWeekday() {
+		return (int) Math.floor(end / (24 * 60));
+	}
+
+	@JsonIgnore
+	public Integer getEndHour() {
+		return (int) Math.floor((end - (getEndWeekday() * 24 * 60)) / 60);
+	}
+
+	@JsonIgnore
+	public Integer getEndMinute() {
+		return start - (getEndWeekday() * 24 * 60) - getEndHour() * 60;
+	}
 }
