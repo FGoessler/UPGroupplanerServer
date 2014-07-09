@@ -15,6 +15,11 @@ public class PrioritizeDatesService {
 
 	public static final int MAX_OPTIMAL_DATE_DURATION = 60;
 	public static final int MIN_OPTIMAL_DATE_DURATION = 30;
+	public static final int EIGHT_PM = 20;
+	public static final int EIGHT_AM = 8;
+	public static final int MINUTES_PER_HOUR = 60;
+	public static final int MINUTES_PER_DAY = 24 * MINUTES_PER_HOUR;
+	public static final int NIGHT_DATE_PRIORITY_MALUS = 3;
 
 	public List<PrioritizedDate> prioritizeDates(final List<PeriodDate> allBlockedDates, final List<PeriodDate> availableDates) {
 		List<PrioritizedDate> prioritizedDates = combineSortAndBasePrioritizeDates(allBlockedDates, availableDates);
@@ -125,36 +130,40 @@ public class PrioritizeDatesService {
 	}
 
 	private boolean isNightDate(final PeriodDate date) {
-		return date.getStartHour() >= 20 || date.getStartHour() < 8 || date.getEndHour() >= 20 || date.getEndHour() <= 8 || date.getEndWeekday() > date.getStartWeekday();
+		return date.getStartHour() >= EIGHT_PM ||
+				date.getStartHour() < EIGHT_AM ||
+				date.getEndHour() >= EIGHT_PM ||
+				date.getEndHour() <= EIGHT_AM ||
+				date.getEndWeekday() > date.getStartWeekday();
 	}
 
 	List<PrioritizedDate> splitAndMarkNightDate(final PrioritizedDate date, final Integer origDatePrio) {
 		List<PrioritizedDate> resultingDates = Lists.newArrayList();
 
-		if (date.getStartHour() < 8) {
-			final int cutPoint = date.getEndWeekday() * 24 * 60 + 8 * 60;
-			PrioritizedDate prevDate = new PrioritizedDate(date.getStart(), cutPoint, origDatePrio - 3);
+		if (date.getStartHour() < EIGHT_AM) {
+			final int cutPoint = date.getEndWeekday() * MINUTES_PER_DAY + EIGHT_AM * MINUTES_PER_HOUR;
+			PrioritizedDate prevDate = new PrioritizedDate(date.getStart(), cutPoint, origDatePrio - NIGHT_DATE_PRIORITY_MALUS);
 			resultingDates.add(prevDate);
 
 			final List<PrioritizedDate> dates = splitAndMarkNightDate(new PrioritizedDate(cutPoint, date.getEnd(), origDatePrio), origDatePrio);
 			resultingDates.addAll(dates);
-		} else if (date.getStartHour() < 20 && date.getEnd() > (date.getStartWeekday() * 24 * 60 + 20 * 60)) {
-			final int cutPoint = date.getStartWeekday() * 24 * 60 + 20 * 60;
+		} else if (date.getStartHour() < EIGHT_PM && date.getEnd() > (date.getStartWeekday() * MINUTES_PER_DAY + EIGHT_PM * MINUTES_PER_HOUR)) {
+			final int cutPoint = date.getStartWeekday() * MINUTES_PER_DAY + EIGHT_PM * MINUTES_PER_HOUR;
 			PrioritizedDate prevDate = new PrioritizedDate(date.getStart(), cutPoint, origDatePrio);
 			resultingDates.add(prevDate);
 
 			final List<PrioritizedDate> dates = splitAndMarkNightDate(new PrioritizedDate(cutPoint, date.getEnd(), origDatePrio), origDatePrio);
 			resultingDates.addAll(dates);
-		} else if (date.getStartHour() >= 20 && ((date.getEndHour() >= 8 && date.getEndWeekday() > date.getStartWeekday()) || date.getEndWeekday() > date.getStartWeekday() + 1)) {
-			final int cutPoint = (date.getStartWeekday() + 1) * 24 * 60 + 8 * 60;
-			PrioritizedDate prevDate = new PrioritizedDate(date.getStart(), cutPoint, origDatePrio - 3);
+		} else if (date.getStartHour() >= EIGHT_PM && ((date.getEndHour() >= EIGHT_AM && date.getEndWeekday() > date.getStartWeekday()) || date.getEndWeekday() > date.getStartWeekday() + 1)) {
+			final int cutPoint = (date.getStartWeekday() + 1) * MINUTES_PER_DAY + EIGHT_AM * MINUTES_PER_HOUR;
+			PrioritizedDate prevDate = new PrioritizedDate(date.getStart(), cutPoint, origDatePrio - NIGHT_DATE_PRIORITY_MALUS);
 			resultingDates.add(prevDate);
 
 			final List<PrioritizedDate> dates = splitAndMarkNightDate(new PrioritizedDate(cutPoint, date.getEnd(), origDatePrio), origDatePrio);
 			resultingDates.addAll(dates);
 		} else {
 			if (isNightDate(date)) {
-				resultingDates.add(new PrioritizedDate(date, origDatePrio - 3));
+				resultingDates.add(new PrioritizedDate(date, origDatePrio - NIGHT_DATE_PRIORITY_MALUS));
 			} else {
 				resultingDates.add(date);
 			}
