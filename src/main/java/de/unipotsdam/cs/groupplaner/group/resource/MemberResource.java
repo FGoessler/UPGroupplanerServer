@@ -25,7 +25,7 @@ public class MemberResource {
 
 	@GET
 	public Response getMembers(@PathParam("id") final Integer groupId) {
-		final List<Member> members = groupService.getMembers(groupId);
+		final List<Member> members = groupService.getActiveMembers(groupId);
 		return Response.status(Response.Status.OK).entity(members).build();
 	}
 

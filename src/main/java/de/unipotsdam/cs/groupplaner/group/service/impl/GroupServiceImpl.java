@@ -3,6 +3,7 @@ package de.unipotsdam.cs.groupplaner.group.service.impl;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import de.unipotsdam.cs.groupplaner.auth.SecurityContextFacade;
 import de.unipotsdam.cs.groupplaner.domain.Group;
 import de.unipotsdam.cs.groupplaner.domain.InvitationState;
@@ -70,8 +71,14 @@ public class GroupServiceImpl implements GroupService {
 
 	@Override
 	@PreAuthorize("@groupPermissionService.hasReadPermission(authentication, #groupId)")
-	public List<Member> getMembers(final Integer groupId) {
-		return invitationDAO.getMembersOfGroup(groupId);
+	public List<Member> getActiveMembers(final Integer groupId) {
+		final List<Member> members = invitationDAO.getMembersOfGroup(groupId);
+		return Lists.newArrayList(Collections2.filter(members, new Predicate<Member>() {
+			@Override
+			public boolean apply(Member member) {
+				return member.getInvitationState() == InvitationState.ACCEPTED || member.getInvitationState() == InvitationState.INVITED;
+			}
+		}));
 	}
 
 	@Override

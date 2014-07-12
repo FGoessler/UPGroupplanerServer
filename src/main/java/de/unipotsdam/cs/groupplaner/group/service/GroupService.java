@@ -18,7 +18,7 @@ public interface GroupService {
 
 	public Member getMember(final String email, Integer groupId);
 
-	public List<Member> getMembers(final Integer groupId);
+	public List<Member> getActiveMembers(final Integer groupId);
 
 	public Member inviteUser(final String inviteeMail, final Integer groupId);
 

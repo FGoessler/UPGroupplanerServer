@@ -53,7 +53,7 @@ public class DatesAggregationService {
 	}
 
 	public List<PeriodDate> getSortedBlockedDatesOfAllMembers(final Integer groupId) {
-		final List<Member> members = groupService.getMembers(groupId);
+		final List<Member> members = groupService.getActiveMembers(groupId);
 		List<PeriodDate> allBlockedDates = new ArrayList<PeriodDate>();
 		for (Member member : members) {
 			// add members blocked dates
