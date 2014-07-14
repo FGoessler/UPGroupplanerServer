@@ -3,6 +3,7 @@ package de.unipotsdam.cs.groupplaner.datefinder.service;
 import com.google.common.collect.Lists;
 import de.unipotsdam.cs.groupplaner.domain.PeriodDate;
 import de.unipotsdam.cs.groupplaner.domain.PrioritizedDate;
+import de.unipotsdam.cs.groupplaner.domain.TraitDate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -15,13 +16,16 @@ public class PrioritizeDatesService {
 
 	public static final int MAX_OPTIMAL_DATE_DURATION = 60;
 	public static final int MIN_OPTIMAL_DATE_DURATION = 30;
+
 	public static final int EIGHT_PM = 20;
 	public static final int EIGHT_AM = 8;
+
 	public static final int MINUTES_PER_HOUR = 60;
 	public static final int MINUTES_PER_DAY = 24 * MINUTES_PER_HOUR;
+
 	public static final int NIGHT_DATE_PRIORITY_MALUS = 3;
 
-	public List<PrioritizedDate> prioritizeDates(final List<PeriodDate> allBlockedDates, final List<PeriodDate> availableDates) {
+	public List<PrioritizedDate> prioritizeDates(final List<TraitDate> allBlockedDates, final List<TraitDate> availableDates) {
 		List<PrioritizedDate> prioritizedDates = combineSortAndBasePrioritizeDates(allBlockedDates, availableDates);
 
 		int currentIndex = 0;
@@ -45,7 +49,7 @@ public class PrioritizeDatesService {
 	/**
 	 * Combine all dates into one list. Blocked dates get PRIORITY_BLOCKED all others get PRIORITY_NEUTRAL.
 	 */
-	private List<PrioritizedDate> combineSortAndBasePrioritizeDates(List<PeriodDate> allBlockedDates, List<PeriodDate> availableDates) {
+	private List<PrioritizedDate> combineSortAndBasePrioritizeDates(List<TraitDate> allBlockedDates, List<TraitDate> availableDates) {
 		final List<PrioritizedDate> prioritizedDates = new ArrayList<PrioritizedDate>();
 		for (PeriodDate date : allBlockedDates) {
 			prioritizedDates.add(new PrioritizedDate(date, PrioritizedDate.PRIORITY_BLOCKED));

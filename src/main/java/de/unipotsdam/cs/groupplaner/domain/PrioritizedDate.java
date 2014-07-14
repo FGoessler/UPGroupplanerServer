@@ -1,9 +1,10 @@
 package de.unipotsdam.cs.groupplaner.domain;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 
 @XmlRootElement
-public class PrioritizedDate extends PeriodDate {
+public class PrioritizedDate extends TraitDate {
 
 	public static final int PRIORITY_OPTIMAL = 10;
 	public static final int PRIORITY_NEUTRAL = 0;
@@ -14,8 +15,8 @@ public class PrioritizedDate extends PeriodDate {
 	 */
 	private final Integer priority;
 
-	public PrioritizedDate(Integer start, Integer end, Integer priority) {
-		super(start, end);
+	public PrioritizedDate(Integer start, Integer end, Integer priority, List<String> traits) {
+		super(start, end, traits);
 
 		if (priority < PRIORITY_BLOCKED) {
 			this.priority = PRIORITY_BLOCKED;
@@ -26,8 +27,16 @@ public class PrioritizedDate extends PeriodDate {
 		}
 	}
 
+	public PrioritizedDate(Integer start, Integer end, Integer priority) {
+		this(start, end, priority, null);
+	}
+
+	public PrioritizedDate(PeriodDate periodDate, Integer priority, List<String> traits) {
+		this(periodDate.getStart(), periodDate.getEnd(), priority, traits);
+	}
+
 	public PrioritizedDate(PeriodDate periodDate, Integer priority) {
-		this(periodDate.getStart(), periodDate.getEnd(), priority);
+		this(periodDate, priority, null);
 	}
 
 	public Integer getPriority() {
