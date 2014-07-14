@@ -41,4 +41,8 @@ public class TraitDate extends PeriodDate {
 		return traits;
 	}
 
+	public Boolean hasTrait(final String trait) {
+		return traits.contains(trait);
+	}
+
 }

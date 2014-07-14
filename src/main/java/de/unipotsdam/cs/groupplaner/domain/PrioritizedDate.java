@@ -31,12 +31,8 @@ public class PrioritizedDate extends TraitDate {
 		this(start, end, priority, null);
 	}
 
-	public PrioritizedDate(PeriodDate periodDate, Integer priority, List<String> traits) {
-		this(periodDate.getStart(), periodDate.getEnd(), priority, traits);
-	}
-
-	public PrioritizedDate(PeriodDate periodDate, Integer priority) {
-		this(periodDate, priority, null);
+	public PrioritizedDate(TraitDate traitDate, Integer priority) {
+		this(traitDate.getStart(), traitDate.getEnd(), priority, traitDate.getTraits());
 	}
 
 	public Integer getPriority() {

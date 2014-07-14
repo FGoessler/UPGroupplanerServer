@@ -1,6 +1,7 @@
 package de.unipotsdam.cs.groupplaner.datefinder.service;
 
 import com.google.common.collect.Lists;
+import de.unipotsdam.cs.groupplaner.datefinder.list.LinearDateList;
 import de.unipotsdam.cs.groupplaner.domain.PeriodDate;
 import de.unipotsdam.cs.groupplaner.domain.PrioritizedDate;
 import de.unipotsdam.cs.groupplaner.domain.TraitDate;
@@ -25,8 +26,8 @@ public class PrioritizeDatesService {
 
 	public static final int NIGHT_DATE_PRIORITY_MALUS = 3;
 
-	public List<PrioritizedDate> prioritizeDates(final List<TraitDate> allBlockedDates, final List<TraitDate> availableDates) {
-		List<PrioritizedDate> prioritizedDates = combineSortAndBasePrioritizeDates(allBlockedDates, availableDates);
+	public List<PrioritizedDate> prioritizeDates(final LinearDateList dates) {
+		List<PrioritizedDate> prioritizedDates = basePrioritizeDates(dates);
 
 		int currentIndex = 0;
 		while (currentIndex < prioritizedDates.size()) {
@@ -49,20 +50,15 @@ public class PrioritizeDatesService {
 	/**
 	 * Combine all dates into one list. Blocked dates get PRIORITY_BLOCKED all others get PRIORITY_NEUTRAL.
 	 */
-	private List<PrioritizedDate> combineSortAndBasePrioritizeDates(List<TraitDate> allBlockedDates, List<TraitDate> availableDates) {
+	private List<PrioritizedDate> basePrioritizeDates(final LinearDateList dates) {
 		final List<PrioritizedDate> prioritizedDates = new ArrayList<PrioritizedDate>();
-		for (PeriodDate date : allBlockedDates) {
-			prioritizedDates.add(new PrioritizedDate(date, PrioritizedDate.PRIORITY_BLOCKED));
-		}
-		for (PeriodDate date : availableDates) {
-			prioritizedDates.add(new PrioritizedDate(date, PrioritizedDate.PRIORITY_NEUTRAL));
-		}
-		Collections.sort(prioritizedDates, new Comparator<PeriodDate>() {
-			@Override
-			public int compare(PeriodDate date1, PeriodDate date2) {
-				return date1.getStart().compareTo(date2.getStart());
+		for (TraitDate date : dates.getDates()) {
+			if (date.hasTrait(TraitDate.TRAIT_BLOCKED_DATE) || date.hasTrait(TraitDate.TRAIT_ACCEPTED_DATE)) {
+				prioritizedDates.add(new PrioritizedDate(date, PrioritizedDate.PRIORITY_BLOCKED));
+			} else {
+				prioritizedDates.add(new PrioritizedDate(date, PrioritizedDate.PRIORITY_NEUTRAL));
 			}
-		});
+		}
 		return prioritizedDates;
 	}
 
