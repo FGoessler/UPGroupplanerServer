@@ -5,7 +5,7 @@ import de.unipotsdam.cs.groupplaner.domain.TraitDate;
 
 import java.util.List;
 
-public interface LinearDateListModifier {
+public interface LinearDateListModifier<D extends TraitDate> {
 	/**
 	 * The curDate passed to this method will be removed from the LinearDateList and the elements of the
 	 * returned list will be inserted instead of it, so that the list stays sorted.
@@ -18,5 +18,5 @@ public interface LinearDateListModifier {
 	 * @param nextDate The next date.  Might be null if curDate is the last date in the list.
 	 * @return The dates, which should replace curDate.
 	 */
-	public List<TraitDate> modifyDate(final TraitDate prevDate, final TraitDate curDate, final TraitDate nextDate);
+	public List<D> modifyDate(final D prevDate, final D curDate, final D nextDate);
 }

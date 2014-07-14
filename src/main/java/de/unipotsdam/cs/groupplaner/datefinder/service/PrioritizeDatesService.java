@@ -26,7 +26,9 @@ public class PrioritizeDatesService {
 
 	public static final int NIGHT_DATE_PRIORITY_MALUS = 3;
 
-	public List<PrioritizedDate> prioritizeDates(final LinearDateList dates) {
+	//TODO: refactor this service to also use LinearDateList instead of a bunch of lists and ugly loops
+
+	public List<PrioritizedDate> prioritizeDates(final LinearDateList<TraitDate> dates) {
 		List<PrioritizedDate> prioritizedDates = basePrioritizeDates(dates);
 
 		int currentIndex = 0;
@@ -50,7 +52,7 @@ public class PrioritizeDatesService {
 	/**
 	 * Combine all dates into one list. Blocked dates get PRIORITY_BLOCKED all others get PRIORITY_NEUTRAL.
 	 */
-	private List<PrioritizedDate> basePrioritizeDates(final LinearDateList dates) {
+	private List<PrioritizedDate> basePrioritizeDates(final LinearDateList<TraitDate> dates) {
 		final List<PrioritizedDate> prioritizedDates = new ArrayList<PrioritizedDate>();
 		for (TraitDate date : dates.getDates()) {
 			if (date.hasTrait(TraitDate.TRAIT_BLOCKED_DATE) || date.hasTrait(TraitDate.TRAIT_ACCEPTED_DATE)) {

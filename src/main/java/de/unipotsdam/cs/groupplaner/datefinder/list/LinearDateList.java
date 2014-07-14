@@ -9,29 +9,31 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class LinearDateList {
+public class LinearDateList<D extends TraitDate> {
 
-	final private TreeMap<Integer, TraitDate> dates;
+	final private TreeMap<Integer, D> dates;
 
 	final private TraitCombiner traitCombiner;
+	final private LinearDateListDateCreator<D> dateCreator;
 
-	public LinearDateList(final TraitCombiner traitCombiner) {
+	public LinearDateList(final TraitCombiner traitCombiner, final LinearDateListDateCreator<D> dateCreator) {
 		this.traitCombiner = traitCombiner;
+		this.dateCreator = dateCreator;
 
-		dates = new TreeMap<Integer, TraitDate>();
-		dates.put(PeriodDate.START_OF_WEEK, new TraitDate(PeriodDate.START_OF_WEEK, PeriodDate.END_OF_WEEK));
+		dates = new TreeMap<Integer, D>();
+		dates.put(PeriodDate.START_OF_WEEK, dateCreator.createDate(PeriodDate.START_OF_WEEK, PeriodDate.END_OF_WEEK, null));
 	}
 
-	public void add(final TraitDate date) {
+	public void add(final D date) {
 		// split dates that overflow at the end of the week
 		if (date.getEnd() < date.getStart()) {
-			add(new TraitDate(PeriodDate.START_OF_WEEK, date.getEnd(), date.getTraits()));
-			add(new TraitDate(date.getStart(), PeriodDate.END_OF_WEEK, date.getTraits()));
+			add(dateCreator.createDate(PeriodDate.START_OF_WEEK, date.getEnd(), date.getTraits()));
+			add(dateCreator.createDate(date.getStart(), PeriodDate.END_OF_WEEK, date.getTraits()));
 			return;
 		}
 
-		final Map.Entry<Integer, TraitDate> prevDateEntry = dates.floorEntry(date.getStart());
-		final TraitDate prevDate = prevDateEntry.getValue();
+		final Map.Entry<Integer, D> prevDateEntry = dates.floorEntry(date.getStart());
+		final D prevDate = prevDateEntry.getValue();
 		final Integer prevKey = prevDateEntry.getKey();
 
 		if (date.getEnd() <= prevDate.getEnd()) {    // new date is fully contained in prevDate
@@ -57,29 +59,29 @@ public class LinearDateList {
 			// we don't need to do anything when the traits are equal cause then the new date is already equally represented by the existing one
 
 			// recursive call to add the rest of the date that is after prevDate
-			add(new TraitDate(prevDate.getEnd(), date.getEnd(), date.getTraits()));
+			add(dateCreator.createDate(prevDate.getEnd(), date.getEnd(), date.getTraits()));
 		}
 
 	}
 
 	private void putDate(final Integer start, final Integer end, final List<String> traits) {
-		dates.put(start, new TraitDate(start, end, traits));
+		dates.put(start, dateCreator.createDate(start, end, traits));
 	}
 
 	public void remove(final Integer startOfDateToRemove) {
-		final TraitDate origDate = dates.get(startOfDateToRemove);
-		TraitDate newDate = new TraitDate(origDate.getStart(), origDate.getEnd());
+		final D origDate = dates.get(startOfDateToRemove);
+		D newDate = dateCreator.createDate(origDate.getStart(), origDate.getEnd(), null);
 
 		// check if date can be merged with the previous date
-		final Map.Entry<Integer, TraitDate> prevEntry = dates.lowerEntry(startOfDateToRemove);
+		final Map.Entry<Integer, D> prevEntry = dates.lowerEntry(startOfDateToRemove);
 		if (prevEntry != null && traitCombiner.areTraitsEqual(prevEntry.getValue(), newDate)) {
-			newDate = new TraitDate(prevEntry.getValue().getStart(), newDate.getEnd());
+			newDate = dateCreator.createDate(prevEntry.getValue().getStart(), newDate.getEnd(), null);
 			dates.remove(prevEntry.getKey());
 		}
 		// check if date can be merged with the next date
-		final Map.Entry<Integer, TraitDate> nextDate = dates.higherEntry(startOfDateToRemove);
+		final Map.Entry<Integer, D> nextDate = dates.higherEntry(startOfDateToRemove);
 		if (nextDate != null && traitCombiner.areTraitsEqual(nextDate.getValue(), newDate)) {
-			newDate = new TraitDate(newDate.getStart(), nextDate.getValue().getEnd());
+			newDate = dateCreator.createDate(newDate.getStart(), nextDate.getValue().getEnd(), null);
 			dates.remove(nextDate.getKey());
 		}
 		/* we don't need to check any more dates, cause as you check to merge on any change there shouldn't be any two
@@ -88,21 +90,21 @@ public class LinearDateList {
 		dates.put(newDate.getStart(), newDate);
 	}
 
-	public void modifyList(final LinearDateListModifier listModifier) {
+	public void modifyList(final LinearDateListModifier<D> listModifier) {
 		Integer curKey = dates.firstKey();
 		do {
-			final TraitDate prevDate = dates.lowerEntry(curKey) != null ? dates.lowerEntry(curKey).getValue() : null;
-			final TraitDate nextDate = dates.higherEntry(curKey) != null ? dates.higherEntry(curKey).getValue() : null;
-			final List<TraitDate> replacementDates = listModifier.modifyDate(prevDate, dates.get(curKey), nextDate);
+			final D prevDate = dates.lowerEntry(curKey) != null ? dates.lowerEntry(curKey).getValue() : null;
+			final D nextDate = dates.higherEntry(curKey) != null ? dates.higherEntry(curKey).getValue() : null;
+			final List<D> replacementDates = listModifier.modifyDate(prevDate, dates.get(curKey), nextDate);
 
 			remove(curKey);
-			for (TraitDate date : replacementDates) {
+			for (D date : replacementDates) {
 				add(date);
 			}
 		} while (!curKey.equals(dates.lastKey()));
 	}
 
-	public Collection<TraitDate> getDates() {
+	public Collection<D> getDates() {
 		return dates.values();
 	}
 }
