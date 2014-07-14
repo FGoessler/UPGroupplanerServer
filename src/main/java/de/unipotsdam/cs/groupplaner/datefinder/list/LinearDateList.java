@@ -66,14 +66,40 @@ public class LinearDateList {
 		dates.put(start, new TraitDate(start, end, traits));
 	}
 
-	public void addAll(final List<TraitDate> dates) {
-		for (TraitDate date : dates) {
-			add(date);
+	public void remove(final Integer startOfDateToRemove) {
+		final TraitDate origDate = dates.get(startOfDateToRemove);
+		TraitDate newDate = new TraitDate(origDate.getStart(), origDate.getEnd());
+
+		// check if date can be merged with the previous date
+		final Map.Entry<Integer, TraitDate> prevEntry = dates.lowerEntry(startOfDateToRemove);
+		if (prevEntry != null && traitCombiner.areTraitsEqual(prevEntry.getValue(), newDate)) {
+			newDate = new TraitDate(prevEntry.getValue().getStart(), newDate.getEnd());
+			dates.remove(prevEntry.getKey());
 		}
+		// check if date can be merged with the next date
+		final Map.Entry<Integer, TraitDate> nextDate = dates.higherEntry(startOfDateToRemove);
+		if (nextDate != null && traitCombiner.areTraitsEqual(nextDate.getValue(), newDate)) {
+			newDate = new TraitDate(newDate.getStart(), nextDate.getValue().getEnd());
+			dates.remove(nextDate.getKey());
+		}
+		/* we don't need to check any more dates, cause as you check to merge on any change there shouldn't be any two
+			dates that can be merged additionally to one inserted/removed */
+
+		dates.put(newDate.getStart(), newDate);
 	}
 
 	public void modifyList(final LinearDateListModifier listModifier) {
-		//TODO
+		Integer curKey = dates.firstKey();
+		do {
+			final TraitDate prevDate = dates.lowerEntry(curKey) != null ? dates.lowerEntry(curKey).getValue() : null;
+			final TraitDate nextDate = dates.higherEntry(curKey) != null ? dates.higherEntry(curKey).getValue() : null;
+			final List<TraitDate> replacementDates = listModifier.modifyDate(prevDate, dates.get(curKey), nextDate);
+
+			remove(curKey);
+			for (TraitDate date : replacementDates) {
+				add(date);
+			}
+		} while (!curKey.equals(dates.lastKey()));
 	}
 
 	public Collection<TraitDate> getDates() {
