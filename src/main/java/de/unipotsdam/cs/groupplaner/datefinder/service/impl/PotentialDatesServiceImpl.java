@@ -6,6 +6,7 @@ import de.unipotsdam.cs.groupplaner.datefinder.service.DatesAggregationService;
 import de.unipotsdam.cs.groupplaner.datefinder.service.PotentialDatesService;
 import de.unipotsdam.cs.groupplaner.datefinder.service.PrioritizeDatesService;
 import de.unipotsdam.cs.groupplaner.domain.PrioritizedDate;
+import de.unipotsdam.cs.groupplaner.domain.TraitDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,7 @@ public class PotentialDatesServiceImpl implements PotentialDatesService {
 	@Override
 	@PreAuthorize("@groupPermissionService.hasReadPermission(authentication, #groupId)")
 	public ImmutableList<PrioritizedDate> calculatePotentialDates(final Integer groupId) {
-		final LinearDateList dates = datesAggregationService.loadDates(groupId);
+		final LinearDateList<TraitDate> dates = datesAggregationService.loadDates(groupId);
 
 		final List<PrioritizedDate> prioritizedDates = prioritizeDatesService.prioritizeDates(dates);
 

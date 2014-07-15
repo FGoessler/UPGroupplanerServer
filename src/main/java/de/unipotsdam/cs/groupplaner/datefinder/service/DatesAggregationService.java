@@ -5,7 +5,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import de.unipotsdam.cs.groupplaner.datefinder.list.LinearDateList;
 import de.unipotsdam.cs.groupplaner.datefinder.list.LinearDateListDateCreator;
-import de.unipotsdam.cs.groupplaner.datefinder.list.TraitCombiner;
+import de.unipotsdam.cs.groupplaner.datefinder.list.TraitDateCombiner;
 import de.unipotsdam.cs.groupplaner.domain.AcceptedDate;
 import de.unipotsdam.cs.groupplaner.domain.BlockedDate;
 import de.unipotsdam.cs.groupplaner.domain.Member;
@@ -29,14 +29,14 @@ public class DatesAggregationService {
 	@Autowired
 	private GroupService groupService;
 	@Autowired
-	private TraitCombiner traitCombiner;
+	private TraitDateCombiner<TraitDate> traitDateCombiner;
 	@Autowired
 	private LinearDateListDateCreator<TraitDate> linearDateListDateCreator;
 
-	public LinearDateList loadDates(final Integer groupId) {
+	public LinearDateList<TraitDate> loadDates(final Integer groupId) {
 		final List<Member> members = groupService.getActiveMembers(groupId);
 
-		final LinearDateList<TraitDate> dates = new LinearDateList<TraitDate>(traitCombiner, linearDateListDateCreator);
+		final LinearDateList<TraitDate> dates = new LinearDateList<TraitDate>(traitDateCombiner, linearDateListDateCreator);
 
 		for (Member member : members) {
 			// add members blocked dates

@@ -9,13 +9,12 @@ public interface LinearDateListModifier<D extends TraitDate> {
 	/**
 	 * The curDate passed to this method will be removed from the LinearDateList and the elements of the
 	 * returned list will be inserted instead of it, so that the list stays sorted.
-	 * The next call of this method will deliver the successor of the original curDate, which now might be one you just
-	 * returned in the list of the previous call.
+	 * The next call of this method will deliver the successor of the original curDate.
 	 * Return a list with only curDate in it if you don't want to modify the LinearDateList.
 	 *
-	 * @param prevDate The previous date. Might be null if curDate is the first date in the list.
+	 * @param prevDate The previous date. If there is no real previous date it'll be the last date of the list.
 	 * @param curDate  The current date.
-	 * @param nextDate The next date.  Might be null if curDate is the last date in the list.
+	 * @param nextDate The next date.  If there is no real next date it'll be the first date of the list.
 	 * @return The dates, which should replace curDate.
 	 */
 	public List<D> modifyDate(final D prevDate, final D curDate, final D nextDate);
