@@ -74,6 +74,7 @@ public class LinearDateList<D extends TraitDate> {
 
 	public void remove(final Integer startOfDateToRemove) {
 		final D origDate = dates.get(startOfDateToRemove);
+		dates.remove(startOfDateToRemove);
 		D newDate = dateCreator.createDate(origDate.getStart(), origDate.getEnd(), null);
 
 		// check if date can be merged with the previous date
@@ -99,15 +100,15 @@ public class LinearDateList<D extends TraitDate> {
 		do {
 			final Map.Entry<Integer, D> prevEntry = dates.lowerEntry(curKey) == null ? dates.lastEntry() : dates.lowerEntry(curKey);
 			final Map.Entry<Integer, D> nextEntry = dates.higherEntry(curKey) == null ? dates.firstEntry() : dates.higherEntry(curKey);
-			final D curDate = dates.get(curKey);
-			final List<D> replacementDates = listModifier.modifyDate(prevEntry.getValue(), curDate, nextEntry.getValue());
+			final Map.Entry<Integer, D> curEntry = dates.floorEntry(curKey);
+			final List<D> replacementDates = listModifier.modifyDate(prevEntry.getValue(), curEntry.getValue(), nextEntry.getValue());
 
-			remove(curKey);
+			remove(curEntry.getKey());
 			for (D date : replacementDates) {
 				add(date);
 			}
 
-			curKey = curDate.getEnd();
+			curKey = curEntry.getValue().getEnd();
 		} while (curKey <= dates.lastKey());
 	}
 
