@@ -1,4 +1,4 @@
-package de.unipotsdam.cs.groupplaner.datefinder.service;
+package de.unipotsdam.cs.groupplaner.datefinder.service.modifier;
 
 import com.google.common.collect.Lists;
 import de.unipotsdam.cs.groupplaner.datefinder.list.ConsecutiveDateStreamModifier;
