@@ -2,7 +2,7 @@ package de.unipotsdam.cs.groupplaner.datefinder.service;
 
 
 import com.google.common.collect.Lists;
-import de.unipotsdam.cs.groupplaner.datefinder.list.LinearDateListModifier;
+import de.unipotsdam.cs.groupplaner.datefinder.list.ConsecutiveDateStreamModifier;
 import de.unipotsdam.cs.groupplaner.domain.PrioritizedDate;
 import de.unipotsdam.cs.groupplaner.domain.TraitDate;
 import org.springframework.stereotype.Component;
@@ -14,7 +14,7 @@ import java.util.List;
  * Convert neutral dates near blocked dates to optimal dates depending on min and max optimal date duration.
  */
 @Component
-public class OptimalDatePrioritizeModifier implements LinearDateListModifier<PrioritizedDate> {
+public class OptimalDatePrioritizeModifier implements ConsecutiveDateStreamModifier<PrioritizedDate> {
 
 	public static final int MAX_OPTIMAL_DATE_DURATION = 60;
 	public static final int MIN_OPTIMAL_DATE_DURATION = 30;

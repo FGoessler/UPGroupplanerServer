@@ -1,10 +1,10 @@
 package de.unipotsdam.cs.groupplaner.datefinder.service;
 
 import com.google.common.collect.Lists;
-import de.unipotsdam.cs.groupplaner.datefinder.list.LinearDateList;
-import de.unipotsdam.cs.groupplaner.datefinder.list.LinearDateListDateCreator;
-import de.unipotsdam.cs.groupplaner.datefinder.list.LinearDateListModifier;
-import de.unipotsdam.cs.groupplaner.datefinder.list.TraitDateCombiner;
+import de.unipotsdam.cs.groupplaner.datefinder.list.ConsecutiveDateStream;
+import de.unipotsdam.cs.groupplaner.datefinder.list.ConsecutiveDateStreamDateCreator;
+import de.unipotsdam.cs.groupplaner.datefinder.list.ConsecutiveDateStreamModifier;
+import de.unipotsdam.cs.groupplaner.datefinder.list.DateCombiner;
 import de.unipotsdam.cs.groupplaner.domain.PrioritizedDate;
 import de.unipotsdam.cs.groupplaner.domain.TraitDate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,16 +16,16 @@ import java.util.List;
 public class PrioritizeDatesService {
 
 	@Autowired
-	private TraitDateCombiner<PrioritizedDate> traitDateCombiner;
+	private DateCombiner<PrioritizedDate> dateCombiner;
 	@Autowired
-	private LinearDateListDateCreator<PrioritizedDate> linearDateListDateCreator;
+	private ConsecutiveDateStreamDateCreator<PrioritizedDate> consecutiveDateStreamDateCreator;
 	@Autowired
-	private List<LinearDateListModifier<PrioritizedDate>> listModifiers;
+	private List<ConsecutiveDateStreamModifier<PrioritizedDate>> listModifiers;
 
-	public List<PrioritizedDate> prioritizeDates(final LinearDateList<TraitDate> dates) {
-		LinearDateList<PrioritizedDate> prioritizedDates = basePrioritizeDates(dates);
+	public List<PrioritizedDate> prioritizeDates(final ConsecutiveDateStream<TraitDate> dates) {
+		ConsecutiveDateStream<PrioritizedDate> prioritizedDates = basePrioritizeDates(dates);
 
-		for (LinearDateListModifier<PrioritizedDate> listModifier : listModifiers) {
+		for (ConsecutiveDateStreamModifier<PrioritizedDate> listModifier : listModifiers) {
 			prioritizedDates.modifyList(listModifier);
 		}
 
@@ -36,8 +36,8 @@ public class PrioritizeDatesService {
 	 * Converts a LinearDateList of TraitDates to a LinearDateList of PrioritizedDates.
 	 * Blocked dates get PRIORITY_BLOCKED all others get PRIORITY_NEUTRAL.
 	 */
-	private LinearDateList<PrioritizedDate> basePrioritizeDates(final LinearDateList<TraitDate> dates) {
-		final LinearDateList<PrioritizedDate> prioritizedDates = new LinearDateList<PrioritizedDate>(traitDateCombiner, linearDateListDateCreator);
+	private ConsecutiveDateStream<PrioritizedDate> basePrioritizeDates(final ConsecutiveDateStream<TraitDate> dates) {
+		final ConsecutiveDateStream<PrioritizedDate> prioritizedDates = new ConsecutiveDateStream<PrioritizedDate>(dateCombiner, consecutiveDateStreamDateCreator);
 		for (TraitDate date : dates.getDates()) {
 			if (date.hasTrait(TraitDate.TRAIT_BLOCKED_DATE) || date.hasTrait(TraitDate.TRAIT_ACCEPTED_DATE)) {
 				final PrioritizedDate newDate = new PrioritizedDate(date, PrioritizedDate.PRIORITY_BLOCKED);

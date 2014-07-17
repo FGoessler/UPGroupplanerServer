@@ -1,7 +1,7 @@
 package de.unipotsdam.cs.groupplaner.datefinder.service.impl;
 
 import com.google.common.collect.ImmutableList;
-import de.unipotsdam.cs.groupplaner.datefinder.list.LinearDateList;
+import de.unipotsdam.cs.groupplaner.datefinder.list.ConsecutiveDateStream;
 import de.unipotsdam.cs.groupplaner.datefinder.service.DatesAggregationService;
 import de.unipotsdam.cs.groupplaner.datefinder.service.PotentialDatesService;
 import de.unipotsdam.cs.groupplaner.datefinder.service.PrioritizeDatesService;
@@ -24,7 +24,7 @@ public class PotentialDatesServiceImpl implements PotentialDatesService {
 	@Override
 	@PreAuthorize("@groupPermissionService.hasReadPermission(authentication, #groupId)")
 	public ImmutableList<PrioritizedDate> calculatePotentialDates(final Integer groupId) {
-		final LinearDateList<TraitDate> dates = datesAggregationService.loadDates(groupId);
+		final ConsecutiveDateStream<TraitDate> dates = datesAggregationService.loadDates(groupId);
 
 		final List<PrioritizedDate> prioritizedDates = prioritizeDatesService.prioritizeDates(dates);
 

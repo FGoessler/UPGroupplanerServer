@@ -1,7 +1,7 @@
 package de.unipotsdam.cs.groupplaner.datefinder.service;
 
 import com.google.common.collect.Lists;
-import de.unipotsdam.cs.groupplaner.datefinder.list.LinearDateListModifier;
+import de.unipotsdam.cs.groupplaner.datefinder.list.ConsecutiveDateStreamModifier;
 import de.unipotsdam.cs.groupplaner.domain.PeriodDate;
 import de.unipotsdam.cs.groupplaner.domain.PrioritizedDate;
 import org.springframework.stereotype.Component;
@@ -12,7 +12,7 @@ import java.util.List;
  * Reduces the priority of all dates in the list between 8pm and 8am by 3.
  */
 @Component
-public class NightDatePrioritizeModifier implements LinearDateListModifier<PrioritizedDate> {
+public class NightDatePrioritizeModifier implements ConsecutiveDateStreamModifier<PrioritizedDate> {
 
 	public static final int NIGHT_BEGIN = 20;
 	public static final int NIGHT_END = 8;

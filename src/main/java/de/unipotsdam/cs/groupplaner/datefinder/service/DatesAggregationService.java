@@ -3,9 +3,9 @@ package de.unipotsdam.cs.groupplaner.datefinder.service;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import de.unipotsdam.cs.groupplaner.datefinder.list.LinearDateList;
-import de.unipotsdam.cs.groupplaner.datefinder.list.LinearDateListDateCreator;
-import de.unipotsdam.cs.groupplaner.datefinder.list.TraitDateCombiner;
+import de.unipotsdam.cs.groupplaner.datefinder.list.ConsecutiveDateStream;
+import de.unipotsdam.cs.groupplaner.datefinder.list.ConsecutiveDateStreamDateCreator;
+import de.unipotsdam.cs.groupplaner.datefinder.list.DateCombiner;
 import de.unipotsdam.cs.groupplaner.domain.AcceptedDate;
 import de.unipotsdam.cs.groupplaner.domain.BlockedDate;
 import de.unipotsdam.cs.groupplaner.domain.Member;
@@ -29,14 +29,14 @@ public class DatesAggregationService {
 	@Autowired
 	private GroupService groupService;
 	@Autowired
-	private TraitDateCombiner<TraitDate> traitDateCombiner;
+	private DateCombiner<TraitDate> dateCombiner;
 	@Autowired
-	private LinearDateListDateCreator<TraitDate> linearDateListDateCreator;
+	private ConsecutiveDateStreamDateCreator<TraitDate> consecutiveDateStreamDateCreator;
 
-	public LinearDateList<TraitDate> loadDates(final Integer groupId) {
+	public ConsecutiveDateStream<TraitDate> loadDates(final Integer groupId) {
 		final List<Member> members = groupService.getActiveMembers(groupId);
 
-		final LinearDateList<TraitDate> dates = new LinearDateList<TraitDate>(traitDateCombiner, linearDateListDateCreator);
+		final ConsecutiveDateStream<TraitDate> dates = new ConsecutiveDateStream<TraitDate>(dateCombiner, consecutiveDateStreamDateCreator);
 
 		for (Member member : members) {
 			// add members blocked dates

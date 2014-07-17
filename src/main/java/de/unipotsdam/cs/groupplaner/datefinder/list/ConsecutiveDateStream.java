@@ -2,22 +2,34 @@ package de.unipotsdam.cs.groupplaner.datefinder.list;
 
 
 import de.unipotsdam.cs.groupplaner.domain.PeriodDate;
-import de.unipotsdam.cs.groupplaner.domain.TraitDate;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class LinearDateList<D extends TraitDate> {
+/**
+ * This class manages a list of PeriodDates in a consecutive stream. That means for any given point in time in a week
+ * there can only be one PeriodDate.
+ * This property is ensured with each add and remove operation.
+ * You need to pass a ConsecutiveDateStreamDateCreator which is responsible for generating new dates for a given
+ * period of time.
+ * You also need to pass a DateCombiner, which is used to check whether to dates are equal beside their start and end
+ * time and to combine he properties of to dates to create a new date.
+ * Use the modifyList method and a custom ConsecutiveDateStreamModifier to change properties on dates or split dates or
+ * do any other "batch" modifications.
+ *
+ * @param <D> The concrete subclass of PeriodDate which should be managed.
+ */
+public class ConsecutiveDateStream<D extends PeriodDate> {
 
 	final private TreeMap<Integer, D> dates;
 
-	final private TraitDateCombiner<D> traitDateCombiner;
-	final private LinearDateListDateCreator<D> dateCreator;
+	final private DateCombiner<D> dateCombiner;
+	final private ConsecutiveDateStreamDateCreator<D> dateCreator;
 
-	public LinearDateList(final TraitDateCombiner<D> traitDateCombiner, final LinearDateListDateCreator<D> dateCreator) {
-		this.traitDateCombiner = traitDateCombiner;
+	public ConsecutiveDateStream(final DateCombiner<D> dateCombiner, final ConsecutiveDateStreamDateCreator<D> dateCreator) {
+		this.dateCombiner = dateCombiner;
 		this.dateCreator = dateCreator;
 
 		dates = new TreeMap<Integer, D>();
@@ -37,24 +49,24 @@ public class LinearDateList<D extends TraitDate> {
 		final Integer prevKey = prevDateEntry.getKey();
 
 		if (date.getEnd() <= prevDate.getEnd()) {    // new date is fully contained in prevDate
-			if (!traitDateCombiner.areDateTraitsEqual(prevDate, date)) {
+			if (!dateCombiner.areAdditionalDatePropertiesEqual(prevDate, date)) {
 				// only create a date before the new date if doesn't start at the same time as the previous date
 				if (prevDate.getStart() < date.getStart()) putDate(prevKey, date.getStart(), prevDate);
 
 				// create the date for the overlapping period with combined traits
-				putDate(traitDateCombiner.combineDates(date.getStart(), date.getEnd(), prevDate, date));
+				putDate(dateCombiner.createDateWithCombinedProperties(date.getStart(), date.getEnd(), prevDate, date));
 
 				// only create a date after the new date if doesn't end at the same time as the previous date
 				if (date.getEnd() < prevDate.getEnd()) putDate(date.getEnd(), prevDate.getEnd(), prevDate);
 			}
 			// we don't need to do anything when the traits are equal cause then the new date is already equally represented by the existing one
 		} else {                                    // new date overlaps to later dates
-			if (!traitDateCombiner.areDateTraitsEqual(prevDate, date)) {
+			if (!dateCombiner.areAdditionalDatePropertiesEqual(prevDate, date)) {
 				// only create a date before the new date if doesn't start at the same time as the previous date
 				if (prevDate.getStart() < date.getStart()) putDate(prevKey, date.getStart(), prevDate);
 
 				// create the date for the overlapping period with combined traits
-				putDate(traitDateCombiner.combineDates(date.getStart(), prevDate.getEnd(), prevDate, date));
+				putDate(dateCombiner.createDateWithCombinedProperties(date.getStart(), prevDate.getEnd(), prevDate, date));
 			}
 			// we don't need to do anything when the traits are equal cause then the new date is already equally represented by the existing one
 
@@ -79,13 +91,13 @@ public class LinearDateList<D extends TraitDate> {
 
 		// check if date can be merged with the previous date
 		final Map.Entry<Integer, D> prevEntry = dates.lowerEntry(startOfDateToRemove);
-		if (prevEntry != null && traitDateCombiner.areDateTraitsEqual(prevEntry.getValue(), newDate)) {
+		if (prevEntry != null && dateCombiner.areAdditionalDatePropertiesEqual(prevEntry.getValue(), newDate)) {
 			newDate = dateCreator.createDate(prevEntry.getValue().getStart(), newDate.getEnd(), null);
 			dates.remove(prevEntry.getKey());
 		}
 		// check if date can be merged with the next date
 		final Map.Entry<Integer, D> nextDate = dates.higherEntry(startOfDateToRemove);
-		if (nextDate != null && traitDateCombiner.areDateTraitsEqual(nextDate.getValue(), newDate)) {
+		if (nextDate != null && dateCombiner.areAdditionalDatePropertiesEqual(nextDate.getValue(), newDate)) {
 			newDate = dateCreator.createDate(newDate.getStart(), nextDate.getValue().getEnd(), null);
 			dates.remove(nextDate.getKey());
 		}
@@ -95,7 +107,7 @@ public class LinearDateList<D extends TraitDate> {
 		dates.put(newDate.getStart(), newDate);
 	}
 
-	public void modifyList(final LinearDateListModifier<D> listModifier) {
+	public void modifyList(final ConsecutiveDateStreamModifier<D> listModifier) {
 		Integer curKey = dates.firstKey();
 		do {
 			final Map.Entry<Integer, D> prevEntry = dates.lowerEntry(curKey) == null ? dates.lastEntry() : dates.lowerEntry(curKey);
