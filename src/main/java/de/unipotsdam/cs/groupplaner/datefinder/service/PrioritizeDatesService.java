@@ -39,7 +39,7 @@ public class PrioritizeDatesService {
 	private ConsecutiveDateStream<PrioritizedDate> basePrioritizeDates(final ConsecutiveDateStream<TraitDate> dates) {
 		final ConsecutiveDateStream<PrioritizedDate> prioritizedDates = new ConsecutiveDateStream<PrioritizedDate>(dateCombiner, consecutiveDateStreamDateCreator);
 		for (TraitDate date : dates.getDates()) {
-			if (date.hasTrait(TraitDate.TRAIT_BLOCKED_DATE) || date.hasTrait(TraitDate.TRAIT_ACCEPTED_DATE)) {
+			if (date.hasTrait(TraitDate.TRAIT_BLOCKED_DATE)) {
 				final PrioritizedDate newDate = new PrioritizedDate(date, PrioritizedDate.PRIORITY_BLOCKED);
 				prioritizedDates.add(newDate);
 			} else {

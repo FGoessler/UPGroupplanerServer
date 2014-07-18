@@ -2,7 +2,6 @@ package de.unipotsdam.cs.groupplaner.datefinder.service;
 
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import de.unipotsdam.cs.groupplaner.datefinder.list.ConsecutiveDateStream;
 import de.unipotsdam.cs.groupplaner.datefinder.list.ConsecutiveDateStreamDateCreator;
 import de.unipotsdam.cs.groupplaner.datefinder.list.DateCombiner;
@@ -16,8 +15,9 @@ import de.unipotsdam.cs.groupplaner.user.dao.BlockedDatesDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class DatesAggregationService {
@@ -42,18 +42,19 @@ public class DatesAggregationService {
 			// add members blocked dates
 			final ImmutableList<BlockedDate> usersBlockedDates = blockedDatesDAO.getBlockedDates(member.getEmail());
 			for (BlockedDate date : usersBlockedDates) {
-				dates.add(new TraitDate(date, Lists.newArrayList(TraitDate.TRAIT_BLOCKED_DATE)));
+				final Map<String, Object> traits = new HashMap<String, Object>();
+				traits.put(TraitDate.TRAIT_BLOCKED_DATE, 1);
+				dates.add(new TraitDate(date, traits));
 			}
 
 			//add members accepted dates
 			final ImmutableList<AcceptedDate> usersAcceptedDates = acceptedDatesDAO.getAcceptedDates(member.getEmail());
 			for (AcceptedDate date : usersAcceptedDates) {
-				final ArrayList<String> traits = Lists.newArrayList();
+				final Map<String, Object> traits = new HashMap<String, Object>();
 				if (date.getGroup().equals(groupId)) {
-					traits.add(TraitDate.TRAIT_ACCEPTED_DATE);
-				} else {
-					traits.add(TraitDate.TRAIT_BLOCKED_DATE);
+					traits.put(TraitDate.TRAIT_ACCEPTED_DATE, true);
 				}
+				traits.put(TraitDate.TRAIT_BLOCKED_DATE, 1);
 				dates.add(new TraitDate(date, traits));
 			}
 		}

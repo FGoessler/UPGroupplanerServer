@@ -5,14 +5,14 @@ import de.unipotsdam.cs.groupplaner.datefinder.list.ConsecutiveDateStreamDateCre
 import de.unipotsdam.cs.groupplaner.domain.PrioritizedDate;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import java.util.Map;
 
 @Component
 public class PrioritizedDateStreamDateCreator implements ConsecutiveDateStreamDateCreator<PrioritizedDate> {
 	@Override
 	public PrioritizedDate createDate(Integer start, Integer end, PrioritizedDate origDate) {
 		final Integer prio = origDate == null ? PrioritizedDate.PRIORITY_NEUTRAL : origDate.getPriority();
-		final List<String> traits = origDate == null ? null : origDate.getTraits();
+		final Map<String, Object> traits = origDate == null ? null : origDate.getTraits();
 		return new PrioritizedDate(start, end, prio, traits);
 	}
 }

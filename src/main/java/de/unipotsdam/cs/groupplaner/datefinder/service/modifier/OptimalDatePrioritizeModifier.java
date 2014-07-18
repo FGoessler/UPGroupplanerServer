@@ -75,6 +75,6 @@ public class OptimalDatePrioritizeModifier implements ConsecutiveDateStreamModif
 	}
 
 	private Boolean dateIsSomehowBlocked(final TraitDate date) {
-		return date.hasTrait(TraitDate.TRAIT_BLOCKED_DATE) || date.hasTrait(TraitDate.TRAIT_ACCEPTED_DATE);
+		return date.hasTrait(TraitDate.TRAIT_BLOCKED_DATE);
 	}
 }
