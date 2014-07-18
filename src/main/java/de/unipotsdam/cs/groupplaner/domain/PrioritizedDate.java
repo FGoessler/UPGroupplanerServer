@@ -1,7 +1,6 @@
 package de.unipotsdam.cs.groupplaner.domain;
 
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.List;
 import java.util.Map;
 
 @XmlRootElement
@@ -16,18 +15,6 @@ public class PrioritizedDate extends TraitDate {
 	 */
 	private final Integer priority;
 
-	public PrioritizedDate(Integer start, Integer end, Integer priority, List<String> traits) {
-		super(start, end, traits);
-
-		if (priority < PRIORITY_BLOCKED) {
-			this.priority = PRIORITY_BLOCKED;
-		} else if (priority > PRIORITY_OPTIMAL) {
-			this.priority = PRIORITY_OPTIMAL;
-		} else {
-			this.priority = priority;
-		}
-	}
-
 	public PrioritizedDate(Integer start, Integer end, Integer priority, Map<String, Object> traits) {
 		super(start, end, traits);
 
@@ -41,7 +28,7 @@ public class PrioritizedDate extends TraitDate {
 	}
 
 	public PrioritizedDate(Integer start, Integer end, Integer priority) {
-		this(start, end, priority, (List<String>) null);
+		this(start, end, priority, null);
 	}
 
 	public PrioritizedDate(TraitDate traitDate, Integer priority) {
