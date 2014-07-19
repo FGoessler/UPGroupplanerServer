@@ -9,17 +9,15 @@ import de.unipotsdam.cs.groupplaner.user.dao.BlockedDatesDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Map;
 
-@Component
-@Path(PathConfig.BLOCKED_DATES_RESOURCE_PATH)
-@Produces({MediaType.APPLICATION_JSON})
+@RestController
+@RequestMapping(PathConfig.BLOCKED_DATES_RESOURCE_PATH)
 public class BlockedDatesResource {
 
 	@Autowired
@@ -27,8 +25,8 @@ public class BlockedDatesResource {
 	@Autowired
 	private SecurityContextFacade securityContextFacade;
 
-	@GET
-	public Response getAllBlockedDates(@QueryParam("source") final String sourceFilter) {
+	@RequestMapping(method = RequestMethod.GET)
+	public Response getAllBlockedDates(@RequestParam("source") final String sourceFilter) {
 		final ImmutableList<BlockedDate> blockedDates;
 		if (sourceFilter == null) {
 			blockedDates = blockedDatesDAO.getBlockedDates(securityContextFacade.getCurrentUserEmail());
@@ -41,7 +39,7 @@ public class BlockedDatesResource {
 
 	// TODO: handle overlapping dates
 
-	@POST
+	@RequestMapping(method = RequestMethod.POST)
 	@Consumes({MediaType.APPLICATION_JSON})
 	public Response createBlockedDate(@RequestBody final Map<String, Object> data) {
 		Preconditions.checkNotNull(data.get("start"));
@@ -55,18 +53,16 @@ public class BlockedDatesResource {
 		return Response.status(Response.Status.CREATED).entity(createdBlockedDate).build();
 	}
 
-	@GET
-	@Path("/{id}")
-	public Response getBlockedDate(@PathParam("id") final Integer id) {
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
+	public Response getBlockedDate(@PathVariable("id") final Integer id) {
 		final BlockedDate blockedDate = checkAndGetBlockedDate(id);
 
 		return Response.status(Response.Status.OK).entity(blockedDate).build();
 	}
 
-	@PUT
-	@Path("/{id}")
+	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 	@Consumes({MediaType.APPLICATION_JSON})
-	public Response updateBlockedDate(@PathParam("id") final Integer id, @RequestBody final Map<String, Object> data) {
+	public Response updateBlockedDate(@PathVariable("id") final Integer id, @RequestBody final Map<String, Object> data) {
 		Preconditions.checkNotNull(data.get("start"));
 		Preconditions.checkNotNull(data.get("end"));
 		Preconditions.checkNotNull(data.get("source"));
@@ -83,9 +79,8 @@ public class BlockedDatesResource {
 		return Response.status(Response.Status.OK).entity(modifiedBlockedDate).build();
 	}
 
-	@DELETE
-	@Path("/{id}")
-	public Response deleteBlockedDate(@PathParam("id") final Integer id) {
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+	public Response deleteBlockedDate(@PathVariable("id") final Integer id) {
 		checkAndGetBlockedDate(id);
 
 		blockedDatesDAO.deleteBlockedDate(id);

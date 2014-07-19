@@ -6,33 +6,31 @@ import de.unipotsdam.cs.groupplaner.config.PathConfig;
 import de.unipotsdam.cs.groupplaner.domain.AcceptedDate;
 import de.unipotsdam.cs.groupplaner.group.service.AcceptedDatesService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Map;
 
-@Component
-@Path(PathConfig.ACCEPTED_DATES_RESOURCE_PATH)
-@Produces({MediaType.APPLICATION_JSON})
+@RestController
+@RequestMapping(PathConfig.ACCEPTED_DATES_RESOURCE_PATH)
 public class AcceptedDatesResource {
 
 	@Autowired
 	private AcceptedDatesService acceptedDatesService;
 
-	@GET
-	public Response getAcceptedDates(@PathParam("id") final Integer groupId) {
+	@RequestMapping(method = RequestMethod.GET)
+	public Response getAcceptedDates(@PathVariable("id") final Integer groupId) {
 		final ImmutableList<AcceptedDate> acceptedDates = acceptedDatesService.getAcceptedDates(groupId);
 		return Response.status(Response.Status.OK).entity(acceptedDates).build();
 	}
 
 	// TODO: handle overlapping dates
 
-	@POST
+	@RequestMapping(method = RequestMethod.POST)
 	@Consumes({MediaType.APPLICATION_JSON})
-	public Response createAcceptedDate(@PathParam("id") final Integer groupId, @RequestBody final Map<String, Object> data) {
+	public Response createAcceptedDate(@PathVariable("id") final Integer groupId, @RequestBody final Map<String, Object> data) {
 		Preconditions.checkNotNull(data.get("start"));
 		Preconditions.checkNotNull(data.get("end"));
 
@@ -41,16 +39,14 @@ public class AcceptedDatesResource {
 		return Response.status(Response.Status.CREATED).entity(createdDate).build();
 	}
 
-	@GET
-	@Path("/{dateId}")
-	public Response getAcceptedDate(@PathParam("id") final Integer groupId, @PathParam("dateId") final Integer id) {
+	@RequestMapping(value = "/{dateId}", method = RequestMethod.GET)
+	public Response getAcceptedDate(@PathVariable("id") final Integer groupId, @PathVariable("dateId") final Integer id) {
 		return Response.status(Response.Status.OK).entity(acceptedDatesService.getAcceptedDate(groupId, id)).build();
 	}
 
-	@PUT
-	@Path("/{dateId}")
+	@RequestMapping(value = "/{dateId}", method = RequestMethod.PUT)
 	@Consumes({MediaType.APPLICATION_JSON})
-	public Response updateAcceptedDate(@PathParam("id") final Integer groupId, @PathParam("dateId") final Integer id, @RequestBody final Map<String, Object> data) {
+	public Response updateAcceptedDate(@PathVariable("id") final Integer groupId, @PathVariable("dateId") final Integer id, @RequestBody final Map<String, Object> data) {
 		Preconditions.checkNotNull(data.get("start"));
 		Preconditions.checkNotNull(data.get("end"));
 
@@ -59,9 +55,8 @@ public class AcceptedDatesResource {
 		return Response.status(Response.Status.OK).entity(modifiedDate).build();
 	}
 
-	@DELETE
-	@Path("/{dateId}")
-	public Response deleteAcceptedDate(@PathParam("id") final Integer groupId, @PathParam("dateId") final Integer id) {
+	@RequestMapping(value = "/{dateId}", method = RequestMethod.DELETE)
+	public Response deleteAcceptedDate(@PathVariable("id") final Integer groupId, @PathVariable("dateId") final Integer id) {
 		acceptedDatesService.deleteAcceptedDate(groupId, id);
 		return Response.status(Response.Status.NO_CONTENT).build();
 	}
