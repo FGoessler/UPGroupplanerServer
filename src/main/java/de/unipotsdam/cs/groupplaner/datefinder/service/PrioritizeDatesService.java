@@ -50,15 +50,4 @@ public class PrioritizeDatesService {
 		return prioritizedDates;
 	}
 
-	/*
-
-	Fuer Qualitaetsbewertung:
-	- Ueberlappungen von BlockedDates zaehlen -> erfordert erweiterten BlockedDates Datentyp und AggregationService
-
-	Idee:
-	BlockedDates erhalten mehr negative Prio je mehr Mitglieder dort blocked sind.
-	Verfügbare Termine erhalten höhere Prio je negativer die Prio naher BlockedDates ist.
-
-	 */
-
 }
