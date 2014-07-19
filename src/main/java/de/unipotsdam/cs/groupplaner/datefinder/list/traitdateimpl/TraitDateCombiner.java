@@ -13,8 +13,10 @@ public class TraitDateCombiner implements DateCombiner<TraitDate> {
 
 	@Override
 	public Boolean areAdditionalDatePropertiesEqual(TraitDate date1, TraitDate date2) {
-		final Boolean sameBlockedTrait = date1.getTrait(TraitDate.TRAIT_BLOCKED_DATE).equals(date2.getTrait(TraitDate.TRAIT_BLOCKED_DATE));
-		final Boolean sameAcceptedTrait = date1.getTrait(TraitDate.TRAIT_ACCEPTED_DATE).equals(date2.getTrait(TraitDate.TRAIT_ACCEPTED_DATE));
+		final Boolean sameBlockedTrait = date1.hasTrait(TraitDate.TRAIT_BLOCKED_DATE) && date2.hasTrait(TraitDate.TRAIT_BLOCKED_DATE) &&
+				date1.getTrait(TraitDate.TRAIT_BLOCKED_DATE).equals(date2.getTrait(TraitDate.TRAIT_BLOCKED_DATE));
+		final Boolean sameAcceptedTrait = date1.hasTrait(TraitDate.TRAIT_ACCEPTED_DATE) && date2.hasTrait(TraitDate.TRAIT_ACCEPTED_DATE) &&
+				date1.getTrait(TraitDate.TRAIT_ACCEPTED_DATE).equals(date2.getTrait(TraitDate.TRAIT_ACCEPTED_DATE));
 
 		return sameBlockedTrait && sameAcceptedTrait;
 	}
