@@ -8,8 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.ws.rs.core.Response;
-
 @RestController
 public class UserResource {
 
@@ -19,7 +17,7 @@ public class UserResource {
 	private SecurityContextFacade securityContextFacade;
 
 	@RequestMapping(PathConfig.BASE_RESOURCE_PATH)
-	public Response getUser() {
+	public User getUser() {
 		String email = securityContextFacade.getCurrentUserEmail();
 		User user = userDAO.getUser(email);
 		if (user == null) {
@@ -27,6 +25,6 @@ public class UserResource {
 			user = userDAO.getUser(email);
 		}
 
-		return Response.status(Response.Status.OK).entity(user).build();
+		return user;
 	}
 }
