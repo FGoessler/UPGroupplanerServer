@@ -1,6 +1,7 @@
 package de.unipotsdam.cs.groupplaner.datefinder.service.modifier;
 
 import com.google.common.collect.Lists;
+import de.unipotsdam.cs.groupplaner.datefinder.list.ConsecutiveDateStream;
 import de.unipotsdam.cs.groupplaner.datefinder.list.ConsecutiveDateStreamModifier;
 import de.unipotsdam.cs.groupplaner.domain.PeriodDate;
 import de.unipotsdam.cs.groupplaner.domain.PrioritizedDate;
@@ -23,7 +24,7 @@ public class NightDatePrioritizeModifier implements ConsecutiveDateStreamModifie
 	public static final int NIGHT_DATE_PRIORITY_MALUS = 3;
 
 	@Override
-	public List<PrioritizedDate> modifyDate(PrioritizedDate prevDate, PrioritizedDate curDate, PrioritizedDate nextDate) {
+	public List<PrioritizedDate> modifyDate(ConsecutiveDateStream<PrioritizedDate> dateStream, PrioritizedDate curDate) {
 		if (isNightDate(curDate)) {
 			return splitAndMarkNightDate(curDate);
 		} else {

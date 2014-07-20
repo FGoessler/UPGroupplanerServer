@@ -110,10 +110,8 @@ public class ConsecutiveDateStream<D extends PeriodDate> {
 	public void modifyList(final ConsecutiveDateStreamModifier<D> listModifier) {
 		Integer curKey = dates.firstKey();
 		do {
-			final Map.Entry<Integer, D> prevEntry = dates.lowerEntry(curKey) == null ? dates.lastEntry() : dates.lowerEntry(curKey);
-			final Map.Entry<Integer, D> nextEntry = dates.higherEntry(curKey) == null ? dates.firstEntry() : dates.higherEntry(curKey);
 			final Map.Entry<Integer, D> curEntry = dates.floorEntry(curKey);
-			final List<D> replacementDates = listModifier.modifyDate(prevEntry.getValue(), curEntry.getValue(), nextEntry.getValue());
+			final List<D> replacementDates = listModifier.modifyDate(this, curEntry.getValue());
 
 			remove(curEntry.getKey());
 			for (D date : replacementDates) {
@@ -126,5 +124,23 @@ public class ConsecutiveDateStream<D extends PeriodDate> {
 
 	public Collection<D> getDates() {
 		return dates.values();
+	}
+
+	/**
+	 * Returns the previous date to the given date. If there is no real previous date, cause curDate is the first date
+	 * of the week, it'll be the last date of the week.
+	 */
+	public D predeccessorDate(final D curDate) {
+		Integer curKey = curDate.getStart();
+		return dates.lowerEntry(curKey) == null ? dates.lastEntry().getValue() : dates.lowerEntry(curKey).getValue();
+	}
+
+	/**
+	 * Returns the next date. If there is no real next date, cause curDate is the last date of the week, it'll be the
+	 * first date of the week.
+	 */
+	public D successorDate(final D curDate) {
+		Integer curKey = curDate.getStart();
+		return dates.higherEntry(curKey) == null ? dates.firstEntry().getValue() : dates.higherEntry(curKey).getValue();
 	}
 }

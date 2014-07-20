@@ -2,6 +2,7 @@ package de.unipotsdam.cs.groupplaner.datefinder.service.modifier;
 
 
 import com.google.common.collect.Lists;
+import de.unipotsdam.cs.groupplaner.datefinder.list.ConsecutiveDateStream;
 import de.unipotsdam.cs.groupplaner.datefinder.list.ConsecutiveDateStreamModifier;
 import de.unipotsdam.cs.groupplaner.datefinder.service.GroupInformationHolder;
 import de.unipotsdam.cs.groupplaner.domain.PrioritizedDate;
@@ -26,7 +27,10 @@ public class OptimalDatePrioritizeModifier implements ConsecutiveDateStreamModif
 	public static final int MIN_OPTIMAL_DATE_DURATION = 30;
 
 	@Override
-	public List<PrioritizedDate> modifyDate(final PrioritizedDate predecessorDate, final PrioritizedDate curDate, final PrioritizedDate successorDate) {
+	public List<PrioritizedDate> modifyDate(ConsecutiveDateStream<PrioritizedDate> dateStream, final PrioritizedDate curDate) {
+		final PrioritizedDate predecessorDate = dateStream.predeccessorDate(curDate);
+		final PrioritizedDate successorDate = dateStream.successorDate(curDate);
+
 		final List<PrioritizedDate> dates = new ArrayList<PrioritizedDate>();
 		if (curDate.getPriority() != PrioritizedDate.PRIORITY_BLOCKED) {
 			final Integer duration = curDate.getDuration();
