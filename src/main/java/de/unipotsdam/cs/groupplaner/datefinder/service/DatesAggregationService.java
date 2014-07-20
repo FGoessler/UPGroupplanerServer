@@ -52,7 +52,7 @@ public class DatesAggregationService {
 			for (AcceptedDate date : usersAcceptedDates) {
 				final Map<String, Object> traits = new HashMap<String, Object>();
 				if (date.getGroup().equals(groupId)) {
-					traits.put(TraitDate.TRAIT_ACCEPTED_DATE, true);
+					traits.put(TraitDate.TRAIT_ACCEPTED_DATE, date.getId());
 				}
 				traits.put(TraitDate.TRAIT_BLOCKED_DATE, 1);
 				dates.add(new TraitDate(date, traits));
