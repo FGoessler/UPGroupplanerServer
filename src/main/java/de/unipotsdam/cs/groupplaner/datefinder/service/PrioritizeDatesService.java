@@ -3,8 +3,9 @@ package de.unipotsdam.cs.groupplaner.datefinder.service;
 import com.google.common.collect.Lists;
 import de.unipotsdam.cs.groupplaner.datefinder.list.ConsecutiveDateStream;
 import de.unipotsdam.cs.groupplaner.datefinder.list.ConsecutiveDateStreamDateCreator;
-import de.unipotsdam.cs.groupplaner.datefinder.list.ConsecutiveDateStreamModifier;
 import de.unipotsdam.cs.groupplaner.datefinder.list.DateCombiner;
+import de.unipotsdam.cs.groupplaner.datefinder.service.modifier.NightDatePrioritizeModifier;
+import de.unipotsdam.cs.groupplaner.datefinder.service.modifier.OptimalDatePrioritizeModifier;
 import de.unipotsdam.cs.groupplaner.domain.PrioritizedDate;
 import de.unipotsdam.cs.groupplaner.domain.TraitDate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,15 +20,17 @@ public class PrioritizeDatesService {
 	private DateCombiner<PrioritizedDate> dateCombiner;
 	@Autowired
 	private ConsecutiveDateStreamDateCreator<PrioritizedDate> consecutiveDateStreamDateCreator;
+
 	@Autowired
-	private List<ConsecutiveDateStreamModifier<PrioritizedDate>> listModifiers;
+	private OptimalDatePrioritizeModifier optimalDatePrioritizeModifier;
+	@Autowired
+	private NightDatePrioritizeModifier nightDatePrioritizeModifier;
 
 	public List<PrioritizedDate> prioritizeDates(final ConsecutiveDateStream<TraitDate> dates) {
 		ConsecutiveDateStream<PrioritizedDate> prioritizedDates = basePrioritizeDates(dates);
 
-		for (ConsecutiveDateStreamModifier<PrioritizedDate> listModifier : listModifiers) {
-			prioritizedDates.modifyList(listModifier);
-		}
+		prioritizedDates.modifyList(optimalDatePrioritizeModifier);
+		prioritizedDates.modifyList(nightDatePrioritizeModifier);
 
 		return Lists.newArrayList(prioritizedDates.getDates());
 	}

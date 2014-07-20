@@ -37,8 +37,6 @@ public class OptimalDatePrioritizeModifier implements ConsecutiveDateStreamModif
 			final Integer newOptiPrioAfterPredcessor = calculateNwPriority(curDate, predecessorDate);
 			final Integer newOptiPrioBeforeSuccessor = calculateNwPriority(curDate, successorDate);
 
-			// TODO: at the moment the algorithm fails to add optimal dates that would cover more than 1 succeeding period (e.g. not night and night date)
-
 			// date is between two blocked dates
 			if (dateIsSomehowBlocked(predecessorDate) && dateIsSomehowBlocked(successorDate)) {
 				if (duration > MAX_OPTIMAL_DATE_DURATION * 2) {    // two optimal dates fit in with break between
