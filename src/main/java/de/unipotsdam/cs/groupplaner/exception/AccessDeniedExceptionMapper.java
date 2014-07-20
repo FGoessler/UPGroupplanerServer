@@ -1,26 +1,21 @@
 package de.unipotsdam.cs.groupplaner.exception;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.stereotype.Component;
-
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  * This ExceptionMapper converts any AccessDeniedExceptions to a "403 Forbidden" status code.
  */
-@Provider
-@Component
-public class AccessDeniedExceptionMapper implements ExceptionMapper<AccessDeniedException> {
+@ControllerAdvice
+public class AccessDeniedExceptionMapper {
 
-	@Override
-	public Response toResponse(AccessDeniedException exception) {
+	@ResponseStatus(HttpStatus.FORBIDDEN)
+	@ExceptionHandler(AccessDeniedException.class)
+	public void toResponse() {
 
-		return Response.status(Response.Status.FORBIDDEN).
-				type(MediaType.APPLICATION_JSON).
-				build();
 	}
 
 }

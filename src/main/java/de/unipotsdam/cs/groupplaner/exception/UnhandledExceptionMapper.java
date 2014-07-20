@@ -1,12 +1,11 @@
 package de.unipotsdam.cs.groupplaner.exception;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
@@ -17,25 +16,24 @@ import java.util.logging.Logger;
 /**
  * This ExceptionMapper handles any unmapped exceptions and provides an appropiate msg in JSON/XML format.
  */
-@Provider
-@Component
-public class UnhandledExceptionMapper implements ExceptionMapper<Exception> {
+@ControllerAdvice
+public class UnhandledExceptionMapper {
 
 	@Autowired
 	private Logger logger;
 
-	@Override
-	public Response toResponse(Exception exception) {
+	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+	@ExceptionHandler(Exception.class)
+	public Map<String, String> toResponse(Exception exception) {
 
 		logger.log(Level.WARNING, exception.getMessage() + "\n" + getStackTrace(exception));
 
 		Map<String, String> errMsgMap = new HashMap<String, String>();
-		errMsgMap.put("message", exception.getLocalizedMessage());
+		if (exception.getLocalizedMessage() != null) {
+			errMsgMap.put("message", exception.getLocalizedMessage());
+		}
 
-		return Response.status(Response.Status.INTERNAL_SERVER_ERROR).
-				entity(errMsgMap).
-				type(MediaType.APPLICATION_JSON).
-				build();
+		return errMsgMap;
 	}
 
 	private String getStackTrace(Exception exception) {
