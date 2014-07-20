@@ -51,16 +51,16 @@ public class NightDatePrioritizeModifier implements ConsecutiveDateStreamModifie
 
 		// cut of part starting between 0am and 8am and ending after 8am
 		if (date.getStartHour() < NIGHT_END && date.getEnd() > cutPoint_8am) {
-			resultingDates.add(new PrioritizedDate(date.getStart(), cutPoint_8am, date.getPriority() - NIGHT_DATE_PRIORITY_MALUS));
-			resultingDates.addAll(splitAndMarkNightDate(new PrioritizedDate(cutPoint_8am, date.getEnd(), date.getPriority())));
+			resultingDates.add(new PrioritizedDate(date.getStart(), cutPoint_8am, date.getPriority() - NIGHT_DATE_PRIORITY_MALUS, date.getTraits()));
+			resultingDates.addAll(splitAndMarkNightDate(new PrioritizedDate(cutPoint_8am, date.getEnd(), date.getPriority(), date.getTraits())));
 			// cut of part starting between 8am and 8pm and ending after 8pm
 		} else if (date.getStartHour() < NIGHT_BEGIN && date.getEnd() > cutPoint_8pm) {
-			resultingDates.add(new PrioritizedDate(date.getStart(), cutPoint_8pm, date.getPriority()));
-			resultingDates.addAll(splitAndMarkNightDate(new PrioritizedDate(cutPoint_8pm, date.getEnd(), date.getPriority())));
+			resultingDates.add(new PrioritizedDate(date.getStart(), cutPoint_8pm, date.getPriority(), date.getTraits()));
+			resultingDates.addAll(splitAndMarkNightDate(new PrioritizedDate(cutPoint_8pm, date.getEnd(), date.getPriority(), date.getTraits())));
 			// cut of part starting after 8pm and ending after 8am of the next day
 		} else if (date.getStartHour() >= NIGHT_BEGIN && date.getEnd() > cutPoint_8amNextDay) {
-			resultingDates.add(new PrioritizedDate(date.getStart(), cutPoint_8amNextDay, date.getPriority() - NIGHT_DATE_PRIORITY_MALUS));
-			resultingDates.addAll(splitAndMarkNightDate(new PrioritizedDate(cutPoint_8amNextDay, date.getEnd(), date.getPriority())));
+			resultingDates.add(new PrioritizedDate(date.getStart(), cutPoint_8amNextDay, date.getPriority() - NIGHT_DATE_PRIORITY_MALUS, date.getTraits()));
+			resultingDates.addAll(splitAndMarkNightDate(new PrioritizedDate(cutPoint_8amNextDay, date.getEnd(), date.getPriority(), date.getTraits())));
 			// any other date does not overlap a 8am or 8pm border and doesn't need to be split any further
 		} else {
 			if (isNightDate(date)) {
