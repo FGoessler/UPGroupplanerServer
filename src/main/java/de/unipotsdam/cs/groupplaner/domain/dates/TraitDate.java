@@ -1,4 +1,4 @@
-package de.unipotsdam.cs.groupplaner.domain;
+package de.unipotsdam.cs.groupplaner.domain.dates;
 
 
 import com.google.common.collect.ImmutableMap;

@@ -1,7 +1,7 @@
 package de.unipotsdam.cs.groupplaner.datefinder.list;
 
 
-import de.unipotsdam.cs.groupplaner.domain.PeriodDate;
+import de.unipotsdam.cs.groupplaner.domain.dates.PeriodDate;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ public interface ConsecutiveDateStreamModifier<D extends PeriodDate> {
 	 * @param dateStream The ConsecutiveDateStream which you are modifying. You can get the previous and next date
 	 *                   directly from here. Do NOT modify this dateStream directly since this might break the iterator
 	 *                   logic!
-	 * @param curDate  The current date.
+	 * @param curDate    The current date.
 	 * @return The dates, which should replace curDate.
 	 */
 	public List<D> modifyDate(final ConsecutiveDateStream<D> dateStream, final D curDate);

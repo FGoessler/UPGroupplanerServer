@@ -1,7 +1,7 @@
 package de.unipotsdam.cs.groupplaner.datefinder.list;
 
 
-import de.unipotsdam.cs.groupplaner.domain.PeriodDate;
+import de.unipotsdam.cs.groupplaner.domain.dates.PeriodDate;
 
 import java.util.Collection;
 import java.util.List;
@@ -74,6 +74,8 @@ public class ConsecutiveDateStream<D extends PeriodDate> {
 			add(dateCreator.createDate(prevDate.getEnd(), date.getEnd(), date));
 		}
 
+		// TODO: logic to merge equal dates before and after the curdate - differentiate between "shouldCreateDateWithCombinedProperties" and "shouldMergeDisjointDates"
+
 	}
 
 	private void putDate(final Integer start, final Integer end, final D origDate) {
@@ -89,13 +91,13 @@ public class ConsecutiveDateStream<D extends PeriodDate> {
 		dates.remove(startOfDateToRemove);
 		D newDate = dateCreator.createDate(origDate.getStart(), origDate.getEnd(), null);
 
-		// check if date can be merged with the previous date
+		// check if date can be merged with the previous date, cause it is also neutral
 		final Map.Entry<Integer, D> prevEntry = dates.lowerEntry(startOfDateToRemove);
 		if (prevEntry != null && dateCombiner.areAdditionalDatePropertiesEqual(prevEntry.getValue(), newDate)) {
 			newDate = dateCreator.createDate(prevEntry.getValue().getStart(), newDate.getEnd(), null);
 			dates.remove(prevEntry.getKey());
 		}
-		// check if date can be merged with the next date
+		// check if date can be merged with the next date, cause it is also neutral
 		final Map.Entry<Integer, D> nextDate = dates.higherEntry(startOfDateToRemove);
 		if (nextDate != null && dateCombiner.areAdditionalDatePropertiesEqual(nextDate.getValue(), newDate)) {
 			newDate = dateCreator.createDate(newDate.getStart(), nextDate.getValue().getEnd(), null);

@@ -1,7 +1,7 @@
 package de.unipotsdam.cs.groupplaner.datefinder.list.traitdateimpl;
 
 import de.unipotsdam.cs.groupplaner.datefinder.list.ConsecutiveDateStreamDateCreator;
-import de.unipotsdam.cs.groupplaner.domain.TraitDate;
+import de.unipotsdam.cs.groupplaner.domain.dates.TraitDate;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;

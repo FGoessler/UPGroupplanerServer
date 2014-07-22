@@ -1,7 +1,7 @@
 package de.unipotsdam.cs.groupplaner.user.dao;
 
 import com.google.common.collect.ImmutableList;
-import de.unipotsdam.cs.groupplaner.domain.BlockedDate;
+import de.unipotsdam.cs.groupplaner.domain.dates.BlockedDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;

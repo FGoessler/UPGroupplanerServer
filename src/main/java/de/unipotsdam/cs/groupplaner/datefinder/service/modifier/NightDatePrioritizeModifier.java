@@ -3,8 +3,8 @@ package de.unipotsdam.cs.groupplaner.datefinder.service.modifier;
 import com.google.common.collect.Lists;
 import de.unipotsdam.cs.groupplaner.datefinder.list.ConsecutiveDateStream;
 import de.unipotsdam.cs.groupplaner.datefinder.list.ConsecutiveDateStreamModifier;
-import de.unipotsdam.cs.groupplaner.domain.PeriodDate;
-import de.unipotsdam.cs.groupplaner.domain.PrioritizedDate;
+import de.unipotsdam.cs.groupplaner.domain.dates.PeriodDate;
+import de.unipotsdam.cs.groupplaner.domain.dates.PrioritizedDate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

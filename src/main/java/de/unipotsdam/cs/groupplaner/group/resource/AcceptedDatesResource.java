@@ -3,7 +3,7 @@ package de.unipotsdam.cs.groupplaner.group.resource;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import de.unipotsdam.cs.groupplaner.config.PathConfig;
-import de.unipotsdam.cs.groupplaner.domain.AcceptedDate;
+import de.unipotsdam.cs.groupplaner.domain.dates.AcceptedDate;
 import de.unipotsdam.cs.groupplaner.group.service.AcceptedDatesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

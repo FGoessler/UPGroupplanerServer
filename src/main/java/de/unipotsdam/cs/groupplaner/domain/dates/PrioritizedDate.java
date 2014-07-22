@@ -1,4 +1,4 @@
-package de.unipotsdam.cs.groupplaner.domain;
+package de.unipotsdam.cs.groupplaner.domain.dates;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Map;

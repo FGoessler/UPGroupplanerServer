@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import de.unipotsdam.cs.groupplaner.auth.SecurityContextFacade;
 import de.unipotsdam.cs.groupplaner.config.PathConfig;
-import de.unipotsdam.cs.groupplaner.domain.BlockedDate;
+import de.unipotsdam.cs.groupplaner.domain.dates.BlockedDate;
 import de.unipotsdam.cs.groupplaner.user.dao.BlockedDatesDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;

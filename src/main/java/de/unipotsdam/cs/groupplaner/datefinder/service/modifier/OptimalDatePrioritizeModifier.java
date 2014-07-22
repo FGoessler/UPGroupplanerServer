@@ -5,8 +5,8 @@ import com.google.common.collect.Lists;
 import de.unipotsdam.cs.groupplaner.datefinder.list.ConsecutiveDateStream;
 import de.unipotsdam.cs.groupplaner.datefinder.list.ConsecutiveDateStreamModifier;
 import de.unipotsdam.cs.groupplaner.datefinder.service.GroupInformationHolder;
-import de.unipotsdam.cs.groupplaner.domain.PrioritizedDate;
-import de.unipotsdam.cs.groupplaner.domain.TraitDate;
+import de.unipotsdam.cs.groupplaner.domain.dates.PrioritizedDate;
+import de.unipotsdam.cs.groupplaner.domain.dates.TraitDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

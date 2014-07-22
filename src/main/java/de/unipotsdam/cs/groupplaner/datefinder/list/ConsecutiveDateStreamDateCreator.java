@@ -1,7 +1,7 @@
 package de.unipotsdam.cs.groupplaner.datefinder.list;
 
 
-import de.unipotsdam.cs.groupplaner.domain.PeriodDate;
+import de.unipotsdam.cs.groupplaner.domain.dates.PeriodDate;
 
 public interface ConsecutiveDateStreamDateCreator<D extends PeriodDate> {
 	/**

@@ -6,8 +6,8 @@ import de.unipotsdam.cs.groupplaner.datefinder.list.ConsecutiveDateStreamDateCre
 import de.unipotsdam.cs.groupplaner.datefinder.list.DateCombiner;
 import de.unipotsdam.cs.groupplaner.datefinder.service.modifier.NightDatePrioritizeModifier;
 import de.unipotsdam.cs.groupplaner.datefinder.service.modifier.OptimalDatePrioritizeModifier;
-import de.unipotsdam.cs.groupplaner.domain.PrioritizedDate;
-import de.unipotsdam.cs.groupplaner.domain.TraitDate;
+import de.unipotsdam.cs.groupplaner.domain.dates.PrioritizedDate;
+import de.unipotsdam.cs.groupplaner.domain.dates.TraitDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

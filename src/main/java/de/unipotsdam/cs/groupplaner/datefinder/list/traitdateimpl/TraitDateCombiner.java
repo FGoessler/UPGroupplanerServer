@@ -3,7 +3,7 @@ package de.unipotsdam.cs.groupplaner.datefinder.list.traitdateimpl;
 
 import com.google.common.collect.Maps;
 import de.unipotsdam.cs.groupplaner.datefinder.list.DateCombiner;
-import de.unipotsdam.cs.groupplaner.domain.TraitDate;
+import de.unipotsdam.cs.groupplaner.domain.dates.TraitDate;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;

@@ -1,7 +1,7 @@
 package de.unipotsdam.cs.groupplaner.group.service.impl;
 
 import com.google.common.collect.ImmutableList;
-import de.unipotsdam.cs.groupplaner.domain.AcceptedDate;
+import de.unipotsdam.cs.groupplaner.domain.dates.AcceptedDate;
 import de.unipotsdam.cs.groupplaner.group.dao.AcceptedDatesDAO;
 import de.unipotsdam.cs.groupplaner.group.service.AcceptedDatesService;
 import org.springframework.beans.factory.annotation.Autowired;

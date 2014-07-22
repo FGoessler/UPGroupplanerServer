@@ -1,7 +1,7 @@
 package de.unipotsdam.cs.groupplaner.group.service;
 
 import com.google.common.collect.ImmutableList;
-import de.unipotsdam.cs.groupplaner.domain.AcceptedDate;
+import de.unipotsdam.cs.groupplaner.domain.dates.AcceptedDate;
 
 public interface AcceptedDatesService {
 	public ImmutableList<AcceptedDate> getAcceptedDates(final Integer groupId);

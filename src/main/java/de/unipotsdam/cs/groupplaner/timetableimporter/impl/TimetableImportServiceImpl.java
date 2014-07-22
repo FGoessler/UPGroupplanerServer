@@ -2,7 +2,7 @@ package de.unipotsdam.cs.groupplaner.timetableimporter.impl;
 
 import com.google.common.collect.ImmutableList;
 import de.unipotsdam.cs.groupplaner.config.ExternalAPIEndpoints;
-import de.unipotsdam.cs.groupplaner.domain.BlockedDate;
+import de.unipotsdam.cs.groupplaner.domain.dates.BlockedDate;
 import de.unipotsdam.cs.groupplaner.timetableimporter.TimetableImportService;
 import de.unipotsdam.cs.groupplaner.user.dao.BlockedDatesDAO;
 import org.apache.http.HttpEntity;
