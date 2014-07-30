@@ -2,11 +2,13 @@ package de.unipotsdam.cs.groupplaner.datefinder.list.traitdateimpl;
 
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import de.unipotsdam.cs.groupplaner.datefinder.list.DateCombiner;
 import de.unipotsdam.cs.groupplaner.domain.dates.TraitDate;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
+import java.util.Set;
 
 @Component
 public class TraitDateCombiner implements DateCombiner<TraitDate> {
@@ -25,8 +27,10 @@ public class TraitDateCombiner implements DateCombiner<TraitDate> {
 		final HashMap<String, Object> combinedTraits = Maps.newHashMap(oldDate.getTraits());
 		combinedTraits.putAll(newDate.getTraits());
 		if (newDate.hasTrait(TraitDate.TRAIT_BLOCKED_DATE) && oldDate.hasTrait(TraitDate.TRAIT_BLOCKED_DATE)) {
-			final Integer blockedDateTraitSum = ((Integer) newDate.getTrait(TraitDate.TRAIT_BLOCKED_DATE)) + ((Integer) oldDate.getTrait(TraitDate.TRAIT_BLOCKED_DATE));
-			combinedTraits.put(TraitDate.TRAIT_BLOCKED_DATE, blockedDateTraitSum);
+			final Set<String> oldDateBlockedMembers = (Set<String>) oldDate.getTrait(TraitDate.TRAIT_BLOCKED_DATE);
+			final Set<String> newDateBlockedMembers = (Set<String>) newDate.getTrait(TraitDate.TRAIT_BLOCKED_DATE);
+			final Sets.SetView<String> unionBlockedMembers = Sets.union(oldDateBlockedMembers, newDateBlockedMembers);
+			combinedTraits.put(TraitDate.TRAIT_BLOCKED_DATE, unionBlockedMembers);
 		}
 		return new TraitDate(start, end, combinedTraits);
 	}

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Convert neutral dates near blocked dates to optimal dates depending on min and max optimal date duration.
@@ -98,7 +99,8 @@ public class OptimalDatePrioritizeModifier implements ConsecutiveDateStreamModif
 	private Double blockedMultiplierForDate(final PrioritizedDate date) {
 		final Integer members = groupInformationHolder.getNumberOfMembers();
 		if (date.hasTrait(TraitDate.TRAIT_BLOCKED_DATE)) {
-			return ((Integer) date.getTrait(TraitDate.TRAIT_BLOCKED_DATE)).doubleValue() / members.doubleValue();
+			final Set blockedMembers = (Set) date.getTrait(TraitDate.TRAIT_BLOCKED_DATE);
+			return blockedMembers.size() / members.doubleValue();
 		} else {
 			return 0.0;
 		}

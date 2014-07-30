@@ -2,6 +2,7 @@ package de.unipotsdam.cs.groupplaner.datefinder.service;
 
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
 import de.unipotsdam.cs.groupplaner.datefinder.list.ConsecutiveDateStream;
 import de.unipotsdam.cs.groupplaner.datefinder.list.ConsecutiveDateStreamDateCreator;
 import de.unipotsdam.cs.groupplaner.datefinder.list.DateCombiner;
@@ -43,7 +44,7 @@ public class DatesAggregationService {
 			final ImmutableList<BlockedDate> usersBlockedDates = blockedDatesDAO.getBlockedDates(member.getEmail());
 			for (BlockedDate date : usersBlockedDates) {
 				final Map<String, Object> traits = new HashMap<String, Object>();
-				traits.put(TraitDate.TRAIT_BLOCKED_DATE, 1);
+				traits.put(TraitDate.TRAIT_BLOCKED_DATE, Sets.newHashSet(member.getEmail()));
 				dates.add(new TraitDate(date, traits));
 			}
 
@@ -54,7 +55,7 @@ public class DatesAggregationService {
 				if (date.getGroup().equals(groupId)) {
 					traits.put(TraitDate.TRAIT_ACCEPTED_DATE, date.getId());
 				}
-				traits.put(TraitDate.TRAIT_BLOCKED_DATE, 1);
+				traits.put(TraitDate.TRAIT_BLOCKED_DATE, Sets.newHashSet(member.getEmail()));
 				dates.add(new TraitDate(date, traits));
 			}
 		}
