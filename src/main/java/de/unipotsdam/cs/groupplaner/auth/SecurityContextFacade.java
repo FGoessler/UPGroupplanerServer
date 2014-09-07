@@ -18,7 +18,7 @@ public class SecurityContextFacade {
 	 * @return The current user.
 	 */
 	public User getCurrentUser() {
-		return new User(getCurrentUserEmail(), null);
+		return new User(getCurrentUserEmail());
 	}
 
 	public String getCurrentUserEmail() {

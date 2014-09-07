@@ -28,7 +28,7 @@ public class UserResource {
 		String email = securityContextFacade.getCurrentUserEmail();
 		User user = userDAO.getUser(email);
 		if (user == null) {
-			userDAO.createUser(new User(email, ""));
+			userDAO.createUser(new User(email));
 			user = userDAO.getUser(email);
 		}
 

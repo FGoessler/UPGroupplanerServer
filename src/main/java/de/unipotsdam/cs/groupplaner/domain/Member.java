@@ -6,33 +6,27 @@ import java.sql.Date;
 @XmlRootElement
 public class Member {
 	private final String email;
-	private final String name;
 	private final String invitedBy;
 	private final InvitationState invitationState;
 	private final Date lastStateChange;
 
-	public Member(final String email, final String name, final InvitationState invitationState, final Date lastStateChange, final String invitedBy) {
+	public Member(final String email, final InvitationState invitationState, final Date lastStateChange, final String invitedBy) {
 		this.email = email;
-		this.name = name;
 		this.invitedBy = invitedBy;
 		this.invitationState = invitationState;
 		this.lastStateChange = lastStateChange;
 	}
 
-	public Member(final String email, final String name, final InvitationState invitationState, final Date lastStateChange) {
-		this(email, name, invitationState, lastStateChange, null);
+	public Member(final String email, final InvitationState invitationState, final Date lastStateChange) {
+		this(email, invitationState, lastStateChange, null);
 	}
 
 	public Member(final User user, final InvitationState invitationState, final Date lastStateChange) {
-		this(user.getEmail(), user.getName(), invitationState, lastStateChange);
+		this(user.getEmail(), invitationState, lastStateChange);
 	}
 
 	public String getEmail() {
 		return email;
-	}
-
-	public String getName() {
-		return name;
 	}
 
 	public String getInvitedBy() {

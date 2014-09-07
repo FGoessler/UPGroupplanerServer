@@ -24,8 +24,7 @@ public class UserDAO {
 		NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(dataSource);
 		Map<String, Object> userMap = new HashMap<String, Object>();
 		userMap.put("email", newUser.getEmail());
-		userMap.put("name", newUser.getName());
-		int rowsAffected = template.update("INSERT INTO user (email, name) VALUES (:email, :name)", userMap);
+		int rowsAffected = template.update("INSERT INTO user (email) VALUES (:email)", userMap);
 		return rowsAffected == 1;
 	}
 
@@ -42,7 +41,7 @@ public class UserDAO {
 	private static class UserRowMapper implements RowMapper<User> {
 		@Override
 		public User mapRow(final ResultSet resultSet, final int rowNum) throws SQLException {
-			return new User(resultSet.getString("email"), resultSet.getString("name"));
+			return new User(resultSet.getString("email"));
 		}
 	}
 }

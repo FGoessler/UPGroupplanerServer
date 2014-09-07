@@ -67,7 +67,7 @@ public class InvitationDAO {
 		@Override
 		public Member mapRow(final ResultSet resultSet, final int rowNum) throws SQLException {
 			InvitationState invitationState = InvitationState.valueOf(resultSet.getString("status"));
-			return new Member(resultSet.getString("email"), resultSet.getString("name"), invitationState, resultSet.getDate("lastModified"), resultSet.getString("invitor"));
+			return new Member(resultSet.getString("email"), invitationState, resultSet.getDate("lastModified"), resultSet.getString("invitor"));
 		}
 	}
 }

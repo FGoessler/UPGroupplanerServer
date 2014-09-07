@@ -92,7 +92,7 @@ public class GroupServiceImpl implements GroupService {
 
 		// if the user does not exist in the db yet add him/her also to user table
 		if (userDAO.getUser(inviteeMail) == null) {
-			userDAO.createUser(new User(inviteeMail, ""));
+			userDAO.createUser(new User(inviteeMail));
 		}
 
 		// check whether the user already had an invite but rejected / was removed
