@@ -35,8 +35,8 @@ public class OptimalDatePrioritizeModifier implements ConsecutiveDateStreamModif
 		final List<PrioritizedDate> dates = new ArrayList<PrioritizedDate>();
 		if (curDate.getPriority() != PrioritizedDate.PRIORITY_BLOCKED) {
 			final Integer duration = curDate.getDuration();
-			final Integer newOptiPrioAfterPredcessor = calculateNwPriority(curDate, predecessorDate);
-			final Integer newOptiPrioBeforeSuccessor = calculateNwPriority(curDate, successorDate);
+			final Integer newOptiPrioAfterPredcessor = calculateNewPriority(curDate, predecessorDate);
+			final Integer newOptiPrioBeforeSuccessor = calculateNewPriority(curDate, successorDate);
 
 			// date is between two blocked dates
 			if (dateIsSomehowBlocked(predecessorDate) && dateIsSomehowBlocked(successorDate)) {
@@ -88,7 +88,7 @@ public class OptimalDatePrioritizeModifier implements ConsecutiveDateStreamModif
 		return date.hasTrait(TraitDate.TRAIT_BLOCKED_DATE);
 	}
 
-	private Integer calculateNwPriority(final PrioritizedDate curDate, final PrioritizedDate edgeDate) {
+	private Integer calculateNewPriority(final PrioritizedDate curDate, final PrioritizedDate edgeDate) {
 		return curDate.getPriority() + ((int) Math.floor(PrioritizedDate.PRIORITY_OPTIMAL * blockedMultiplierForDate(edgeDate)));
 	}
 
