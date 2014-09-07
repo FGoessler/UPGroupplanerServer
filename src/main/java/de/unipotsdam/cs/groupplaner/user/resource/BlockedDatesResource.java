@@ -39,8 +39,6 @@ public class BlockedDatesResource {
 		return Response.status(Response.Status.OK).entity(blockedDates).build();
 	}
 
-	// TODO: handle overlapping dates
-
 	@POST
 	@Consumes({MediaType.APPLICATION_JSON})
 	public Response createBlockedDate(@RequestBody final Map<String, Object> data) {

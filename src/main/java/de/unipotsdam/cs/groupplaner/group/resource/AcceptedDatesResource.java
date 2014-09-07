@@ -28,8 +28,6 @@ public class AcceptedDatesResource {
 		return Response.status(Response.Status.OK).entity(acceptedDates).build();
 	}
 
-	// TODO: handle overlapping dates
-
 	@POST
 	@Consumes({MediaType.APPLICATION_JSON})
 	public Response createAcceptedDate(@PathParam("id") final Integer groupId, @RequestBody final Map<String, Object> data) {

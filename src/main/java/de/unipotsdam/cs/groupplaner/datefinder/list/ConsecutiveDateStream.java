@@ -56,26 +56,25 @@ public class ConsecutiveDateStream<D extends PeriodDate> {
 				// create the date for the overlapping period with combined traits
 				putDate(dateCombiner.createDateWithCombinedProperties(date.getStart(), date.getEnd(), prevDate, date));
 
-				// only create a date after the new date if doesn't end at the same time as the previous date
+				// only create a date after the new date if it doesn't end at the same time as the previous date
 				if (date.getEnd() < prevDate.getEnd()) putDate(date.getEnd(), prevDate.getEnd(), prevDate);
 			}
-			// we don't need to do anything when the traits are equal cause then the new date is already equally represented by the existing one
+			// we don't need to do anything when the properties are equal cause then the new date is already equally
+			// represented by the existing one
 		} else {                                    // new date overlaps to later dates
 			if (!dateCombiner.areAdditionalDatePropertiesEqual(prevDate, date)) {
-				// only create a date before the new date if doesn't start at the same time as the previous date
+				// only create a date before the new date if it doesn't start at the same time as the previous date
 				if (prevDate.getStart() < date.getStart()) putDate(prevKey, date.getStart(), prevDate);
 
 				// create the date for the overlapping period with combined traits
 				putDate(dateCombiner.createDateWithCombinedProperties(date.getStart(), prevDate.getEnd(), prevDate, date));
 			}
-			// we don't need to do anything when the traits are equal cause then the new date is already equally represented by the existing one
+			// we don't need to do anything when the properties are equal cause then the new date is already equally
+			// represented by the existing one
 
 			// recursive call to add the rest of the date that is after prevDate
 			add(dateCreator.createDate(prevDate.getEnd(), date.getEnd(), date));
 		}
-
-		// TODO: logic to merge equal dates before and after the curdate - differentiate between "shouldCreateDateWithCombinedProperties" and "shouldMergeDisjointDates"
-
 	}
 
 	private void putDate(final Integer start, final Integer end, final D origDate) {
