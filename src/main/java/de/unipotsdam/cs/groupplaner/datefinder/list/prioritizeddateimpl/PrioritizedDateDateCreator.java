@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 @Component
-public class PrioritizedDateStreamDateCreator implements ConsecutiveDateStreamDateCreator<PrioritizedDate> {
+public class PrioritizedDateDateCreator implements ConsecutiveDateStreamDateCreator<PrioritizedDate> {
 	@Override
 	public PrioritizedDate createDate(Integer start, Integer end, PrioritizedDate origDate) {
 		final Integer prio = origDate == null ? PrioritizedDate.PRIORITY_NEUTRAL : origDate.getPriority();
